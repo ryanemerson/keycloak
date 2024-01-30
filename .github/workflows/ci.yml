@@ -258,19 +258,57 @@ jobs:
     needs: [build, conditional]
     if: needs.conditional.outputs.ci-store == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    timeout-minutes: 150
     strategy:
       matrix:
-        db: [postgres, mysql, oracle, mssql, mariadb]
+        db: [aurora-postgres, postgres, mysql, oracle, mssql, mariadb]
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
+
+      - id: aurora-init
+        name: Initialize Aurora environment
+        if: ${{ matrix.db == 'aurora-postgres' }}
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set region us-east-1
+          PASS=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 13; echo)
+          echo "::add-mask::${PASS}"
+          echo "name=gh-action-$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "password=${PASS}" >> $GITHUB_OUTPUT
+
+      - id: aurora-create
+        name: Create Aurora DB
+        if: ${{ matrix.db == 'aurora-postgres' }}
+        uses: ./.github/actions/aurora-create-database
+        with:
+          name: ${{ steps.aurora-init.outputs.name }}
+          password: ${{ steps.aurora-init.outputs.password }}
+          region: us-east-1
 
       - id: integration-test-setup
         name: Integration test setup
         uses: ./.github/actions/integration-test-setup
 
+      - name: Run Aurora tests
+        if: ${{ matrix.db == 'aurora-postgres' }}
+        run: |
+          PROPS="-Dauth.server.db.host=${{ steps.aurora-create.outputs.endpoint }}"
+          PROPS+=" -Dkeycloak.connectionsJpa.password=${{ steps.aurora-init.outputs.password }}"
+
+          # Disable TLS for now as it increases latency dramatically
+          #curl --fail-with-body https://truststore.pki.rds.amazonaws.com/us-east-1/us-east-1-bundle.pem -o ${{ github.workspace }}/aws.pem
+          #PROPS+=" -Dkeycloak.connectionsJpa.jdbcParameters=?ssl=true&sslmode=verify-ca&sslrootcert=${{ github.workspace }}/aws.pem"
+
+          # Exclude UsersTest for now as it takes ~ 90 minutes to execute
+          TESTS='!%regex[.*.UsersTest.*],'
+          TESTS+=`testsuite/integration-arquillian/tests/base/testsuites/suite.sh database`
+          echo "Tests: $TESTS"
+          ./mvnw test ${{ env.SUREFIRE_RETRY }} -Pauth-server-quarkus -Pdb-${{ matrix.db }} $PROPS -Dtest=$TESTS -pl testsuite/integration-arquillian/tests/base 2>&1 | misc/log/trimmer.sh
+
       - name: Run base tests
+        if: ${{ matrix.db != 'aurora-postgres' }}
         run: |
           TESTS=`testsuite/integration-arquillian/tests/base/testsuites/suite.sh database`
           echo "Tests: $TESTS"
@@ -292,6 +330,14 @@ jobs:
         uses: ./.github/actions/archive-surefire-reports
         with:
           job-id: store-integration-tests-${{ matrix.db }}
+
+      - name: Delete Aurora DB
+        if: ${{ always() && matrix.db == 'aurora-postgres' }}
+        uses: ./.github/actions/aurora-delete-database
+        with:
+          name: ${{ steps.aurora-init.outputs.name }}
+          region: us-east-1
+
 
   store-model-tests:
     name: Store Model Tests
