@@ -270,13 +270,22 @@ jobs:
         name: Initialize Aurora environment
         if: ${{ matrix.db == 'aurora-postgres' }}
         run: |
+          wget https://github.com/ekalinin/awsping/releases/download/0.5.2/awsping.linux.amd64.tgz
+          tar xzvf awsping.linux.amd64.tgz
+          chmod +x awsping
+          ./awsping -verbose 1
+          AWS_REGION=$(./awsping -verbose 1 | awk '{ print $2 }' | head -2 | tail -1)
+          echo "Region: ${AWS_REGION}"
+
           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws configure set region us-east-1
+          aws configure set region ${AWS_REGION}
           PASS=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 13; echo)
           echo "::add-mask::${PASS}"
+
           echo "name=gh-action-$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
           echo "password=${PASS}" >> $GITHUB_OUTPUT
+          echo "region=${AWS_REGION}" >> $GITHUB_OUTPUT
 
       - id: aurora-create
         name: Create Aurora DB
@@ -285,7 +294,7 @@ jobs:
         with:
           name: ${{ steps.aurora-init.outputs.name }}
           password: ${{ steps.aurora-init.outputs.password }}
-          region: us-east-1
+          region: ${{ steps.aurora-init.outputs.region }}
 
       - id: integration-test-setup
         name: Integration test setup
@@ -298,7 +307,8 @@ jobs:
           PROPS+=" -Dkeycloak.connectionsJpa.password=${{ steps.aurora-init.outputs.password }}"
 
           # Disable TLS for now as it increases latency dramatically
-          #curl --fail-with-body https://truststore.pki.rds.amazonaws.com/us-east-1/us-east-1-bundle.pem -o ${{ github.workspace }}/aws.pem
+          REGION=${{ steps.aurora-init.outputs.region }}
+          #curl --fail-with-body https://truststore.pki.rds.amazonaws.com/${REGION}/${REGION}-bundle.pem -o ${{ github.workspace }}/aws.pem
           #PROPS+=" -Dkeycloak.connectionsJpa.jdbcParameters=?ssl=true&sslmode=verify-ca&sslrootcert=${{ github.workspace }}/aws.pem"
 
           # Exclude UsersTest for now as it takes ~ 90 minutes to execute
@@ -336,8 +346,7 @@ jobs:
         uses: ./.github/actions/aurora-delete-database
         with:
           name: ${{ steps.aurora-init.outputs.name }}
-          region: us-east-1
-
+          region: ${{ steps.aurora-init.outputs.region }}
 
   store-model-tests:
     name: Store Model Tests
