@@ -108,6 +108,7 @@ import org.keycloak.services.DefaultKeycloakSessionFactory;
 import org.keycloak.services.ServicesLogger;
 import org.keycloak.services.resources.JsResource;
 import org.keycloak.services.resources.LoadBalancerResource;
+import org.keycloak.services.resources.XSiteCheckResource;
 import org.keycloak.services.resources.admin.AdminRoot;
 import org.keycloak.theme.ClasspathThemeProviderFactory;
 import org.keycloak.theme.ClasspathThemeResourceProviderFactory;
@@ -647,6 +648,8 @@ class KeycloakProcessor {
         if (!Profile.isFeatureEnabled(Profile.Feature.MULTI_SITE)) {
             buildTimeConditionBuildItemBuildProducer.produce(new BuildTimeConditionBuildItem(index.getIndex().getClassByName(DotName.createSimple(
                     LoadBalancerResource.class.getName())), false));
+            buildTimeConditionBuildItemBuildProducer.produce(new BuildTimeConditionBuildItem(index.getIndex().getClassByName(DotName.createSimple(
+                  XSiteCheckResource.class.getName())), false));
         }
 
         KeycloakHandlerChainCustomizer chainCustomizer = new KeycloakHandlerChainCustomizer();
