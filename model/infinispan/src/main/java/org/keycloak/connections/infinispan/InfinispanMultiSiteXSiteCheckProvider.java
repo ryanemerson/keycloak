@@ -22,9 +22,17 @@ import static org.infinispan.client.rest.RestResponse.OK;
 import static org.keycloak.connections.infinispan.InfinispanConnectionProvider.USER_SESSION_CACHE_NAME;
 
 import java.io.IOException;
+import java.net.Socket;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509ExtendedTrustManager;
 import javax.security.auth.callback.CallbackHandler;
 
 import org.infinispan.client.hotrod.RemoteCache;
@@ -71,10 +79,10 @@ public class InfinispanMultiSiteXSiteCheckProvider implements XSiteCheckProvider
         }
 
         Configuration config = cache.getRemoteCacheContainer().getConfiguration();
-        // TODO? This will only work for DIGEST and PLAIN authentication
-        CallbackHandler ch = config.security().authentication().callbackHandler();
 
         RestClientConfigurationBuilder configurationBuilder = new RestClientConfigurationBuilder();
+        // TODO? This will only work for DIGEST and PLAIN authentication
+        CallbackHandler ch = config.security().authentication().callbackHandler();
         if (ch != null) {
             if (ch instanceof BasicCallbackHandler basicCallbackHandler) {
                 configurationBuilder
@@ -84,6 +92,16 @@ public class InfinispanMultiSiteXSiteCheckProvider implements XSiteCheckProvider
                       .password(new String(basicCallbackHandler.getPassword()));
             } else {
                 throw new IllegalArgumentException("Unexpect CallbackHandler " + ch.getClass().getName());
+            }
+        }
+
+        if (config.security().ssl().enabled()) {
+            try {
+                // TODO handle his better!
+                // Always trust the Infinispan server for now
+                configurationBuilder.security().ssl().sslContext(SSLContext.getDefault()).trustManagers(new TrustManager[]{new ZeroSecurityTrustManager()});
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
             }
         }
 
@@ -123,5 +141,41 @@ public class InfinispanMultiSiteXSiteCheckProvider implements XSiteCheckProvider
 
     @Override
     public void close() {
+    }
+
+    static class ZeroSecurityTrustManager extends X509ExtendedTrustManager {
+        @Override
+        public void checkClientTrusted(X509Certificate[] chain, String authType, Socket socket) throws CertificateException {
+        }
+
+        @Override
+        public void checkServerTrusted(X509Certificate[] chain, String authType, Socket socket) throws CertificateException {
+
+        }
+
+        @Override
+        public void checkClientTrusted(X509Certificate[] chain, String authType, SSLEngine engine) throws CertificateException {
+
+        }
+
+        @Override
+        public void checkServerTrusted(X509Certificate[] chain, String authType, SSLEngine engine) throws CertificateException {
+
+        }
+
+        @Override
+        public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+
+        }
+
+        @Override
+        public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+
+        }
+
+        @Override
+        public X509Certificate[] getAcceptedIssuers() {
+            return new X509Certificate[0];
+        }
     }
 }
