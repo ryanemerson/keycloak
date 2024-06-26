@@ -603,7 +603,7 @@ public class RealmCacheSession implements CacheRealmProvider {
         // this is needed so that a client that hasn't been committed isn't cached in a query
         listInvalidations.add(realm.getId());
 
-        invalidationEvents.add(ClientAddedEvent.create(client.getId(), realm.getId()));
+        invalidationEvents.add(ClientAddedEvent.create(client.getId(), client.getClientId(), realm.getId()));
         cache.clientAdded(realm.getId(), invalidations);
         return client;
     }

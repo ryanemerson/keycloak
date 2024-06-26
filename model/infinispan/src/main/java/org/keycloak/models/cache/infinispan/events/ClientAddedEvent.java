@@ -17,9 +17,11 @@
 
 package org.keycloak.models.cache.infinispan.events;
 
+import java.util.Objects;
 import java.util.Set;
 
 import org.infinispan.protostream.annotations.ProtoFactory;
+import org.infinispan.protostream.annotations.ProtoField;
 import org.infinispan.protostream.annotations.ProtoTypeId;
 import org.keycloak.marshalling.Marshalling;
 import org.keycloak.models.cache.infinispan.RealmCacheManager;
@@ -30,17 +32,40 @@ import org.keycloak.models.cache.infinispan.RealmCacheManager;
 @ProtoTypeId(Marshalling.CLIENT_ADDED_EVENT)
 public class ClientAddedEvent extends BaseClientEvent {
 
+   @ProtoField(3)
+   final String clientId;
+
     @ProtoFactory
-    ClientAddedEvent(String id, String realmId) {
+    ClientAddedEvent(String id, String clientId, String realmId) {
         super(id, realmId);
+        this.clientId = clientId;
     }
 
-    public static ClientAddedEvent create(String clientUuid, String realmId) {
-        return new ClientAddedEvent(clientUuid, realmId);
+    public static ClientAddedEvent create(String clientUuid, String clientId, String realmId) {
+        return new ClientAddedEvent(clientUuid, clientId, realmId);
     }
 
     @Override
     public void addInvalidations(RealmCacheManager realmCache, Set<String> invalidations) {
         realmCache.clientAdded(realmId, invalidations);
     }
+
+   @Override
+   public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      if (!super.equals(o)) return false;
+      ClientAddedEvent that = (ClientAddedEvent) o;
+      return Objects.equals(id, that.id) && Objects.equals(clientId, that.clientId) && Objects.equals(realmId, that.realmId);
+   }
+
+   @Override
+   public int hashCode() {
+      return Objects.hash(super.hashCode(), id, clientId, realmId);
+   }
+
+   @Override
+   public String toString() {
+      return String.format("ClientAddedEvent [ realmId=%s, clientUuid=%s, clientId=%s ]", realmId, id, clientId);
+   }
 }

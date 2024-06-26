@@ -27,7 +27,7 @@ import org.keycloak.cluster.ClusterEvent;
  */
 public abstract class InvalidationEvent implements ClusterEvent {
 
-    private final String id;
+    protected final String id;
 
     protected InvalidationEvent(String id) {
         this.id = Objects.requireNonNull(id);
