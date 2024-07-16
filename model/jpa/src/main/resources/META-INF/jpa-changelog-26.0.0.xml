@@ -45,4 +45,17 @@
         </createIndex>
     </changeSet>
 
+    <changeSet author="keycloak" id="29399-jdbc-ping-default">
+        <createTable tableName="JGROUPSPING">
+            <column name="own_addr" type="VARCHAR(200)">
+                <constraints nullable="false" />
+            </column>
+            <column name="cluster_name" type="VARCHAR(200)">
+                <constraints nullable="false" />
+            </column>
+            <column name="ping_data" type="VARBINARY(5000)"/>
+        </createTable>
+        <addPrimaryKey columnNames="own_addr,cluster_name" constraintName="CONSTRAINT_JGROUPSPING" tableName="JGROUPSPING"/>
+    </changeSet>
+
 </databaseChangeLog>
