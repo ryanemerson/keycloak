@@ -120,6 +120,9 @@
             MSSQL returns the whole result at once.
             See https://docs.oracle.com/en/database/oracle/oracle-database/21/jjdbc/resultset.html -->
             <property name="hibernate.jdbc.fetch_size" value="64" />
+
+            <!-- TODO remove -->
+            <property name = "hibernate.show_sql" value = "true" />
         </properties>
     </persistence-unit>
 </persistence>
