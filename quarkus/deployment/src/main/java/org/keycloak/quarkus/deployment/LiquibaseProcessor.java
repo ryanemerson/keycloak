@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 
 import io.quarkus.agroal.spi.JdbcDataSourceBuildItem;
-import io.quarkus.deployment.annotations.Produce;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.ClassInfo;
@@ -34,7 +33,6 @@ import static org.keycloak.quarkus.deployment.KeycloakProcessor.getDefaultDataSo
 
 class LiquibaseProcessor {
 
-    @Produce(LiquibaseBuildStep.class)
     @Record(ExecutionTime.STATIC_INIT)
     @BuildStep
     void configure(KeycloakRecorder recorder, List<JdbcDataSourceBuildItem> jdbcDataSources, CombinedIndexBuildItem indexBuildItem) {

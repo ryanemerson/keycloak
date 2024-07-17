@@ -38,7 +38,6 @@ public class CacheBuildSteps {
     // they will still be created and use CPU cycles and create garbage collection.
     // See: https://issues.redhat.com/browse/JGRP-2130 for the JGroups discussion, and https://github.com/keycloak/keycloak/issues/29129 for the issue Keycloak had with this.
     @Consume(LoggingSetupBuildItem.class)
-    @Consume(LiquibaseBuildStep.class)
     @Record(ExecutionTime.RUNTIME_INIT)
     @BuildStep
     void configureInfinispan(KeycloakRecorder recorder, BuildProducer<SyntheticBeanBuildItem> syntheticBeanBuildItems, ShutdownContextBuildItem shutdownContext) {
