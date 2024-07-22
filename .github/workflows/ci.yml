@@ -488,7 +488,7 @@ jobs:
         run: |
           EC2_CLUSTER_NAME=${{ steps.ec2-create.outputs.ec2_cluster }}
           AWS_REGION=${{ steps.aurora-init.outputs.region }}
-          PROPS=${{ steps.aurora-init.outputs.maven_properties }}
+          PROPS="${{ steps.aurora-init.outputs.maven_properties }}"
           
           PROPS+=" -Dkeycloak.connectionsJpa.password=${{ steps.aurora-init.outputs.aurora-cluster-password }}"
           PROPS+=" -Djdbc.mvn.groupId=software.amazon.jdbc -Djdbc.mvn.artifactId=aws-advanced-jdbc-wrapper -Djdbc.mvn.version=2.3.1 -Djdbc.driver.tmp.dir=target/unpacked/keycloak-${{ env.old-version }}/providers"
@@ -531,7 +531,7 @@ jobs:
         run: |
           EC2_CLUSTER_NAME=${{ steps.ec2-create.outputs.ec2_cluster }}
           AWS_REGION=${{ steps.aurora-init.outputs.region }}
-          PROPS=${{ steps.aurora-init.outputs.maven_properties }}          
+          PROPS="${{ steps.aurora-init.outputs.maven_properties }}"
           PROPS+=" -Dkeycloak.connectionsJpa.password=${{ steps.aurora-init.outputs.aurora-cluster-password }}"
           
           TESTS=`testsuite/integration-arquillian/tests/base/testsuites/suite.sh database`
