@@ -23,11 +23,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.keycloak.Config;
+import org.keycloak.connections.jpa.JpaConnectionProvider;
+import org.keycloak.connections.jpa.JpaConnectionProviderFactory;
+import org.keycloak.connections.jpa.updater.JpaUpdaterProviderFactory;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.provider.Provider;
 import org.keycloak.provider.ProviderFactory;
 import org.keycloak.provider.ProviderManagerRegistry;
 import org.keycloak.provider.Spi;
+import org.keycloak.quarkus.runtime.storage.legacy.liquibase.QuarkusJpaUpdaterProvider;
+import org.keycloak.quarkus.runtime.storage.legacy.liquibase.QuarkusJpaUpdaterProviderFactory;
 import org.keycloak.quarkus.runtime.themes.QuarkusJarThemeProviderFactory;
 import org.keycloak.services.DefaultKeycloakSessionFactory;
 import org.keycloak.services.resources.admin.permissions.AdminPermissions;
@@ -99,9 +104,13 @@ public final class QuarkusKeycloakSessionFactory extends DefaultKeycloakSessionF
         if (componentFactoryPF != null) {
             componentFactoryPF.postInit(this);
         }
+        // Init JpaConnectionProvider first to ensure that DB resources are available to all other providers
+        ProviderFactory<JpaConnectionProvider> jpaUpdaterProvider = getProviderFactory(JpaConnectionProvider.class);
+        jpaUpdaterProvider.postInit(this);
+
         for (Map<String, ProviderFactory> f : factoriesMap.values()) {
             for (ProviderFactory factory : f.values()) {
-                if (factory != componentFactoryPF) {
+                if (factory != componentFactoryPF && factory != jpaUpdaterProvider) {
                     factory.postInit(this);
                 }
             }
