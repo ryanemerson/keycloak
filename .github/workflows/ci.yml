@@ -448,6 +448,13 @@ jobs:
           echo "aurora-cluster-name=${AURORA_CLUSTER_NAME}" >> $GITHUB_OUTPUT
           echo "aurora-cluster-password=${PASS}" >> $GITHUB_OUTPUT
           echo "region=${AWS_REGION}" >> $GITHUB_OUTPUT
+          
+          PROPS="-Dauth.server.db.host=${AURORA_CLUSTER_NAME}"
+          
+          curl --fail-with-body https://truststore.pki.rds.amazonaws.com/${AWS_REGION}/${AWS_REGION}-bundle.pem -o aws.pem
+          PROPS+=" -Dkeycloak.connectionsJpa.jdbcParameters=\"?ssl=true&sslmode=verify-ca&sslrootcert=/opt/keycloak/aws.pem\""
+          
+          echo "maven_properties=${PROPS}" >> $GITHUB_OUTPUT
 
       - id: aurora-create
         name: Create Aurora DB
@@ -464,9 +471,15 @@ jobs:
           EC2_CLUSTER_NAME=keycloak_$(git rev-parse --short HEAD)
           echo "ec2_cluster=${EC2_CLUSTER_NAME}" >> $GITHUB_OUTPUT
           
+          git archive --format=zip --output /tmp/keycloak.zip $GITHUB_REF
+          zip -u /tmp/keycloak.zip aws.pem
+          
           cd .github/scripts/ansible
           ./aws_ec2.sh requirements
           ./aws_ec2.sh create ${AWS_REGION} ${EC2_CLUSTER_NAME}
+          ./keycloak_ec2_installer.sh ${AWS_REGION} ${EC2_CLUSTER_NAME} /tmp/keycloak.zip
+          ./mvn_ec2_runner.sh ${AWS_REGION} ${EC2_CLUSTER_NAME} "clean install -B -DskipTests -Pdistribution"
+          ./mvn_ec2_runner.sh ${AWS_REGION} ${EC2_CLUSTER_NAME} "clean install -B -DskipTests -pl testsuite/integration-arquillian/servers/auth-server/quarkus -Pauth-server-quarkus -Pdb-aurora-postgres -Dmaven.build.cache.enabled=true"
 
       - name: Run Aurora migration tests on EC2
         id: aurora-migration-tests
@@ -475,19 +488,12 @@ jobs:
         run: |
           EC2_CLUSTER_NAME=${{ steps.ec2-create.outputs.ec2_cluster }}
           AWS_REGION=${{ steps.aurora-init.outputs.region }}
-          PROPS="-Dauth.server.db.host=${{ steps.aurora-init.outputs.aurora-cluster-name }}"
+          PROPS=${{ steps.aurora-init.outputs.maven_properties }}
+          
           PROPS+=" -Dkeycloak.connectionsJpa.password=${{ steps.aurora-init.outputs.aurora-cluster-password }}"
-          PROPS+=" -Dkeycloak.connectionsJpa.jdbcParameters=\"?ssl=true&sslmode=verify-ca&sslrootcert=/opt/keycloak/aws.pem\""
           PROPS+=" -Djdbc.mvn.groupId=software.amazon.jdbc -Djdbc.mvn.artifactId=aws-advanced-jdbc-wrapper -Djdbc.mvn.version=2.3.1 -Djdbc.driver.tmp.dir=target/unpacked/keycloak-${{ env.old-version }}/providers"
 
-          curl --fail-with-body https://truststore.pki.rds.amazonaws.com/${AWS_REGION}/${AWS_REGION}-bundle.pem -o aws.pem
-          git archive --format=zip --output /tmp/keycloak.zip $GITHUB_REF
-          zip -u /tmp/keycloak.zip aws.pem
-
           cd .github/scripts/ansible
-          ./keycloak_ec2_installer.sh ${AWS_REGION} ${EC2_CLUSTER_NAME} /tmp/keycloak.zip
-          ./mvn_ec2_runner.sh ${AWS_REGION} ${EC2_CLUSTER_NAME} "clean install -B -DskipTests -Pdistribution"
-          ./mvn_ec2_runner.sh ${AWS_REGION} ${EC2_CLUSTER_NAME} "clean install -B -DskipTests -pl testsuite/integration-arquillian/servers/auth-server/quarkus -Pauth-server-quarkus -Pdb-aurora-postgres -Dmaven.build.cache.enabled=true"
           ./mvn_ec2_runner.sh ${AWS_REGION} ${EC2_CLUSTER_NAME} "clean install -B ${{ env.SUREFIRE_RETRY }} -Pauth-server-quarkus -Pdb-aurora-postgres -Pauth-server-migration $PROPS -Dtest=MigrationTest -Dmigration.mode=auto -Dmigrated.auth.server.version=${{ env.old-version }} -Dmigration.import.file.name=migration-realm-${{ env.old-version }}.json -Dauth.server.ssl.required=false -f testsuite/integration-arquillian/pom.xml 2>&1 | misc/log/trimmer.sh"
 
           # Copy returned surefire-report directories to workspace root to ensure they're discovered
@@ -525,20 +531,13 @@ jobs:
         run: |
           EC2_CLUSTER_NAME=${{ steps.ec2-create.outputs.ec2_cluster }}
           AWS_REGION=${{ steps.aurora-init.outputs.region }}
-          PROPS="-Dauth.server.db.host=${{ steps.aurora-init.outputs.aurora-cluster-name }}"
+          PROPS=${{ steps.aurora-init.outputs.maven_properties }}          
           PROPS+=" -Dkeycloak.connectionsJpa.password=${{ steps.aurora-init.outputs.aurora-cluster-password }}"
-          PROPS+=" -Dkeycloak.connectionsJpa.jdbcParameters=\"?ssl=true&sslmode=verify-ca&sslrootcert=/opt/keycloak/aws.pem\""
+          
           TESTS=`testsuite/integration-arquillian/tests/base/testsuites/suite.sh database`
           echo "Tests: $TESTS"
           
-          curl --fail-with-body https://truststore.pki.rds.amazonaws.com/${AWS_REGION}/${AWS_REGION}-bundle.pem -o aws.pem
-          git archive --format=zip --output /tmp/keycloak.zip $GITHUB_REF
-          zip -u /tmp/keycloak.zip aws.pem
-          
           cd .github/scripts/ansible
-          ./keycloak_ec2_installer.sh ${AWS_REGION} ${EC2_CLUSTER_NAME} /tmp/keycloak.zip
-          ./mvn_ec2_runner.sh ${AWS_REGION} ${EC2_CLUSTER_NAME} "clean install -B -DskipTests -Pdistribution"
-          ./mvn_ec2_runner.sh ${AWS_REGION} ${EC2_CLUSTER_NAME} "clean install -B -DskipTests -pl testsuite/integration-arquillian/servers/auth-server/quarkus -Pauth-server-quarkus -Pdb-aurora-postgres -Dmaven.build.cache.enabled=true"
           ./mvn_ec2_runner.sh ${AWS_REGION} ${EC2_CLUSTER_NAME} "test -B ${{ env.SUREFIRE_RETRY }} -Pauth-server-quarkus -Pdb-aurora-postgres $PROPS -Dtest=$TESTS -pl testsuite/integration-arquillian/tests/base 2>&1 | misc/log/trimmer.sh"
           
           # Copy returned surefire-report directories to workspace root to ensure they're discovered
