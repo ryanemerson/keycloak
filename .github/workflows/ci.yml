@@ -424,7 +424,7 @@ jobs:
 
   auroradb-integration-tests:
     name: AuroraDB IT
-    needs: [build, conditional]
+    needs: conditional
     if: needs.conditional.outputs.ci-aurora == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 150
