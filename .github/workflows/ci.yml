@@ -473,6 +473,7 @@ jobs:
           
           git archive --format=zip --output /tmp/keycloak.zip $GITHUB_REF
           zip -u /tmp/keycloak.zip aws.pem
+          zip -ur /tmp/keycloak.zip .git
           
           cd .github/scripts/ansible
           ./aws_ec2.sh requirements
