@@ -11,5 +11,5 @@ CLUSTER_NAME=$2
 MVN_PARAMS=${@:3}
 
 
-ansible-playbook -i ${CLUSTER_NAME}_${REGION}_inventory.yml mvn.yml \
+ansible-playbook -v -i ${CLUSTER_NAME}_${REGION}_inventory.yml mvn.yml \
   -e "mvn_params=\"${MVN_PARAMS}\""
