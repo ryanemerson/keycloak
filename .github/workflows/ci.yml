@@ -424,12 +424,16 @@ jobs:
 
   auroradb-integration-tests:
     name: AuroraDB IT
-    needs: conditional
+    needs: [build, conditional]
     if: needs.conditional.outputs.ci-aurora == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 150
     steps:
       - uses: actions/checkout@v4
+
+      - id: integration-test-setup
+        name: Integration test setup
+        uses: ./.github/actions/integration-test-setup
 
       - id: aurora-init
         name: Initialize Aurora environment
@@ -452,8 +456,7 @@ jobs:
           PROPS="-Dauth.server.db.host=${AURORA_CLUSTER_NAME}"
           
           curl --fail-with-body https://truststore.pki.rds.amazonaws.com/${AWS_REGION}/${AWS_REGION}-bundle.pem -o aws.pem
-          PROPS+=" -Dkeycloak.connectionsJpa.jdbcParameters=\"?ssl=true&sslmode=verify-ca&sslrootcert=/opt/keycloak/aws.pem\""
-          
+
           echo "maven_properties=${PROPS}" >> $GITHUB_OUTPUT
 
       - id: aurora-create
@@ -464,44 +467,29 @@ jobs:
           password: ${{ steps.aurora-init.outputs.aurora-cluster-password }}
           region: ${{ steps.aurora-init.outputs.region }}
 
-      - id: ec2-create
-        name: Create EC2 runner instance
-        run: |
-          AWS_REGION=${{ steps.aurora-init.outputs.region }}
-          EC2_CLUSTER_NAME=keycloak_$(git rev-parse --short HEAD)
-          echo "ec2_cluster=${EC2_CLUSTER_NAME}" >> $GITHUB_OUTPUT
-          
-          git archive --format=zip --output /tmp/keycloak.zip $GITHUB_REF
-          zip -u /tmp/keycloak.zip aws.pem
-          zip -ur /tmp/keycloak.zip .git
-          
-          cd .github/scripts/ansible
-          ./aws_ec2.sh requirements
-          ./aws_ec2.sh create ${AWS_REGION} ${EC2_CLUSTER_NAME}
-          ./keycloak_ec2_installer.sh ${AWS_REGION} ${EC2_CLUSTER_NAME} /tmp/keycloak.zip
-          ./mvn_ec2_runner.sh ${AWS_REGION} ${EC2_CLUSTER_NAME} "-B install -Pdistribution -am -pl distribution/maven-plugins/licenses-processor"
-          ./mvn_ec2_runner.sh ${AWS_REGION} ${EC2_CLUSTER_NAME} "-B install dependency:resolve -V -e -DskipTests -DskipExamples -DexcludeGroupIds=org.keycloak -Dsilent=true"
-
-      - name: Run Aurora migration tests on EC2
+      - name: Run Aurora migration tests
         id: aurora-migration-tests
         env:
           old-version: 24.0.4
         run: |
-          EC2_CLUSTER_NAME=${{ steps.ec2-create.outputs.ec2_cluster }}
-          AWS_REGION=${{ steps.aurora-init.outputs.region }}
           PROPS="${{ steps.aurora-init.outputs.maven_properties }}"
-          
+          PROPS+=" -Dkeycloak.connectionsJpa.jdbcParameters=\"?ssl=true&sslmode=verify-ca&sslrootcert=$(pwd)/aws.pem\""
           PROPS+=" -Dkeycloak.connectionsJpa.password=${{ steps.aurora-init.outputs.aurora-cluster-password }}"
           PROPS+=" -Djdbc.mvn.groupId=software.amazon.jdbc -Djdbc.mvn.artifactId=aws-advanced-jdbc-wrapper -Djdbc.mvn.version=2.3.1 -Djdbc.driver.tmp.dir=target/unpacked/keycloak-${{ env.old-version }}/providers"
 
-          cd .github/scripts/ansible
-          ./mvn_ec2_runner.sh ${AWS_REGION} ${EC2_CLUSTER_NAME} "clean install -B ${{ env.SUREFIRE_RETRY }} -Pauth-server-quarkus -Pdb-aurora-postgres -Pauth-server-migration $PROPS -Dtest=MigrationTest -Dmigration.mode=auto -Dmigrated.auth.server.version=${{ env.old-version }} -Dmigration.import.file.name=migration-realm-${{ env.old-version }}.json -Dauth.server.ssl.required=false -f testsuite/integration-arquillian/pom.xml 2>&1 | misc/log/trimmer.sh"
-
-          # Copy returned surefire-report directories to workspace root to ensure they're discovered
-          results=(files/keycloak/results/*)
-          rsync -a $results/* ../../../
-
-          rm -rf $results
+          ./mvnw clean install -B ${{ env.SUREFIRE_RETRY }} \
+          ${PROPS} \
+          -Pauth-server-quarkus \
+          -Pdb-aurora-postgres \
+          -Pauth-server-migration \
+          -Dtest=MigrationTest \
+          -Dmigration.mode=auto \
+          -Dmigrated.auth.server.version=${{ matrix.old-version }} \
+          -Dmigration.import.file.name=migration-realm-${{ matrix.old-version }}.json \
+          -Dauth.server.ssl.required=false \
+          -Dauth.server.db.host=localhost \
+          "-Dwebdriver.chrome.driver=$CHROMEWEBDRIVER/chromedriver" \
+          -f testsuite/integration-arquillian/pom.xml 2>&1 | misc/log/trimmer.sh
 
       - name: Upload JVM Heapdumps
         if: always()
@@ -527,12 +515,31 @@ jobs:
           name: auroraDB-migration-tests-mvn-logs
           path: .github/scripts/ansible/files
 
+      - id: ec2-create
+        name: Create EC2 runner instance
+        run: |
+          AWS_REGION=${{ steps.aurora-init.outputs.region }}
+          EC2_CLUSTER_NAME=keycloak_$(git rev-parse --short HEAD)
+          echo "ec2_cluster=${EC2_CLUSTER_NAME}" >> $GITHUB_OUTPUT
+
+          git archive --format=zip --output /tmp/keycloak.zip $GITHUB_REF
+          zip -u /tmp/keycloak.zip aws.pem
+          zip -ur /tmp/keycloak.zip .git
+
+          cd .github/scripts/ansible
+          ./aws_ec2.sh requirements
+          ./aws_ec2.sh create ${AWS_REGION} ${EC2_CLUSTER_NAME}
+          ./keycloak_ec2_installer.sh ${AWS_REGION} ${EC2_CLUSTER_NAME} /tmp/keycloak.zip
+          ./mvn_ec2_runner.sh ${AWS_REGION} ${EC2_CLUSTER_NAME} "-B install -Pdistribution -am -pl distribution/maven-plugins/licenses-processor"
+          ./mvn_ec2_runner.sh ${AWS_REGION} ${EC2_CLUSTER_NAME} "-B install dependency:resolve -V -e -DskipTests -DskipExamples -DexcludeGroupIds=org.keycloak -Dsilent=true"
+
       - name: Run Aurora integration tests on EC2
         id: aurora-integration-tests
         run: |
           EC2_CLUSTER_NAME=${{ steps.ec2-create.outputs.ec2_cluster }}
           AWS_REGION=${{ steps.aurora-init.outputs.region }}
           PROPS="${{ steps.aurora-init.outputs.maven_properties }}"
+          PROPS+=" -Dkeycloak.connectionsJpa.jdbcParameters=\"?ssl=true&sslmode=verify-ca&sslrootcert=/opt/keycloak/aws.pem\""
           PROPS+=" -Dkeycloak.connectionsJpa.password=${{ steps.aurora-init.outputs.aurora-cluster-password }}"
           
           TESTS=`testsuite/integration-arquillian/tests/base/testsuites/suite.sh database`
