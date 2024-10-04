@@ -1,13 +1,13 @@
 /*
  * Copyright 2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,13 +43,17 @@ public class AuthenticationSessionAuthNoteUpdateEvent implements ClusterEvent {
         this.tabId = Objects.requireNonNull(tabId);
     }
 
+    public static AuthenticationSessionAuthNoteUpdateEvent create(String authSessionId, String tabId, Map<String, String> authNotesFragment) {
+        return new AuthenticationSessionAuthNoteUpdateEvent(authNotesFragment, authSessionId, tabId);
+    }
+
     /**
      * Creates an instance of the event.
      *
      * @return Event. Note that {@code authNotesFragment} property is not thread safe which is fine for now.
      */
     @ProtoFactory
-    public static AuthenticationSessionAuthNoteUpdateEvent create(String authSessionId, String tabId, Map<String, String> authNotesFragment) {
+    public static AuthenticationSessionAuthNoteUpdateEvent create(String authSessionId, String tabId, Map<String, String> authNotesFragment, String ignored) {
         return new AuthenticationSessionAuthNoteUpdateEvent(authNotesFragment, authSessionId, tabId);
     }
 
@@ -67,6 +71,9 @@ public class AuthenticationSessionAuthNoteUpdateEvent implements ClusterEvent {
     public Map<String, String> getAuthNotesFragment() {
         return authNotesFragment;
     }
+
+    @ProtoField(4)
+    public String ignored = "";
 
     @Override
     public boolean equals(Object o) {
