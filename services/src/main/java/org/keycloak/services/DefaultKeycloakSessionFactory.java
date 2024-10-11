@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -117,23 +118,54 @@ public abstract class DefaultKeycloakSessionFactory implements KeycloakSessionFa
                 }
             }
             checkProvider();
-            // Component factory must be initialized first, so that postInit in other factories can use component factories
-            updateComponentFactoryProviderFactory();
-            if (componentFactoryPF != null) {
-                componentFactoryPF.postInit(this);
-            }
-            for (Map<String, ProviderFactory> factories : factoriesMap.values()) {
-                for (ProviderFactory factory : factories.values()) {
-                    if (factory != componentFactoryPF) {
-                        factory.postInit(this);
-                    }
-                }
-            }
+            initProviderFactories();
             // make the session factory ready for hot deployment
             ProviderManagerRegistry.SINGLETON.setDeployer(this);
         }
 
         AdminPermissions.registerListener(this);
+    }
+
+    protected void initProviderFactories() {
+        // Component factory must be initialized first, so that postInit in other factories can use component factories
+        updateComponentFactoryProviderFactory();
+        if (componentFactoryPF != null) {
+            componentFactoryPF.postInit(this);
+        }
+
+        Set<Class<? extends Provider>> initializedProviders = new HashSet<>();
+        Stack<ProviderFactory> recursionPrevention = new Stack<>();
+
+        for(Map.Entry<Class<? extends Provider>, Map<String, ProviderFactory>>  f : factoriesMap.entrySet()) {
+            if (initializedProviders.contains(f.getKey())) {
+                continue;
+            }
+            initializeProviders(f.getKey(), f.getValue(), initializedProviders, recursionPrevention);
+        }
+    }
+
+    private void initializeProviders(Class<? extends Provider> provider, Map<String, ProviderFactory> factories, Set<Class<? extends Provider>> intializedProviders, Stack<ProviderFactory> recursionPrevention) {
+        for (ProviderFactory<?> factory : factories.values()) {
+            if (factory == componentFactoryPF)
+                continue;
+
+            for (Class<? extends Provider> providerDep : factory.dependsOn()) {
+                if (recursionPrevention.contains(factory)) {
+                    List<String> stackForException = recursionPrevention.stream().map(providerFactory -> providerFactory.getClass().getName()).toList();
+                    throw new RuntimeException("Detected a recursive dependency on provider " + providerDep.getName() +
+                          " while the initialization of the following provider factories is ongoing: " + stackForException);
+                }
+                Map<String, ProviderFactory> f = factoriesMap.get(providerDep);
+                if (f == null) {
+                    throw new RuntimeException("No provider factories exists for provider " + providerDep.getSimpleName());
+                }
+                recursionPrevention.push(factory);
+                initializeProviders(providerDep, f, intializedProviders, recursionPrevention);
+                recursionPrevention.pop();
+            }
+            factory.postInit(this);
+            intializedProviders.add(provider);
+        }
     }
 
     protected Map<Class<? extends Provider>, Map<String, ProviderFactory>> getFactoriesCopy() {
