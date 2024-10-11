@@ -86,6 +86,7 @@ import org.keycloak.quarkus.runtime.configuration.Configuration;
 import javax.net.ssl.SSLContext;
 import javax.sql.DataSource;
 
+import static org.infinispan.configuration.global.TransportConfiguration.STACK;
 import static org.keycloak.config.CachingOptions.CACHE_EMBEDDED_MTLS_KEYSTORE_FILE_PROPERTY;
 import static org.keycloak.config.CachingOptions.CACHE_EMBEDDED_MTLS_KEYSTORE_PASSWORD_PROPERTY;
 import static org.keycloak.config.CachingOptions.CACHE_EMBEDDED_MTLS_TRUSTSTORE_FILE_PROPERTY;
@@ -382,9 +383,10 @@ public class CacheManagerFactory {
 
         var jdbcStackName = "jdbc-ping";
         var transportConfig = builder.getGlobalConfigurationBuilder().transport();
+        var stackXmlAttribute = transportConfig.defaultTransport().attributes().attribute(STACK);
         if (transportStack != null && !transportStack.isBlank() && !jdbcStackName.equals(transportStack)) {
             transportConfig.defaultTransport().stack(transportStack);
-        } else {
+        } else if (!stackXmlAttribute.isModified() || jdbcStackName.equals(stackXmlAttribute.get())){
             EntityManager em = keycloakSession.getProvider(JpaConnectionProvider.class).getEntityManager();
             var tableName = JpaUtils.getTableNameForNativeQuery("JGROUPSPING", em);
             var attributes = Map.of(
