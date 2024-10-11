@@ -20,7 +20,6 @@ package org.keycloak.models.sessions.infinispan;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,9 +34,7 @@ import org.jboss.logging.Logger;
 import org.keycloak.Config;
 import org.keycloak.common.util.Time;
 import org.keycloak.connections.infinispan.InfinispanConnectionProvider;
-import org.keycloak.connections.infinispan.InfinispanConnectionProviderFactory;
 import org.keycloak.connections.infinispan.InfinispanUtil;
-import org.keycloak.connections.jpa.JpaConnectionProvider;
 import org.keycloak.infinispan.util.InfinispanUtils;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
@@ -72,7 +69,7 @@ public class InfinispanSingleUseObjectProviderFactory implements SingleUseObject
 
     @Override
     public Set<Class<? extends Provider>> dependsOn() {
-        return Set.of(InfinispanConnectionProvider.class, SingleUseObjectProvider.class);
+        return Set.of(InfinispanConnectionProvider.class);
     }
 
     @Override
