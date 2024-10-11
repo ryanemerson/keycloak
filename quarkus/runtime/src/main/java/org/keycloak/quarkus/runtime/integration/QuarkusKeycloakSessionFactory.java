@@ -48,20 +48,13 @@ public final class QuarkusKeycloakSessionFactory extends DefaultKeycloakSessionF
     }
 
     private static QuarkusKeycloakSessionFactory INSTANCE;
-    private final Boolean reaugmented;
-    private final Map<Spi, Map<Class<? extends Provider>, Map<String, Class<? extends ProviderFactory>>>> factories;
-    private Map<String, ProviderFactory> preConfiguredProviders;
 
     public QuarkusKeycloakSessionFactory(
             Map<Spi, Map<Class<? extends Provider>, Map<String, Class<? extends ProviderFactory>>>> factories,
             Map<Class<? extends Provider>, String> defaultProviders,
             Map<String, ProviderFactory> preConfiguredProviders,
-            List<ClasspathThemeProviderFactory.ThemesRepresentation> themes,
-            Boolean reaugmented) {
+            List<ClasspathThemeProviderFactory.ThemesRepresentation> themes) {
         this.provider = defaultProviders;
-        this.factories = factories;
-        this.preConfiguredProviders = preConfiguredProviders;
-        this.reaugmented = reaugmented;
         serverStartupTimestamp = System.currentTimeMillis();
         spis = factories.keySet();
 
@@ -88,8 +81,6 @@ public final class QuarkusKeycloakSessionFactory extends DefaultKeycloakSessionF
     }
 
     private QuarkusKeycloakSessionFactory() {
-        reaugmented = false;
-        factories = Collections.emptyMap();
     }
 
     @Override

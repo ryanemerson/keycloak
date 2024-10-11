@@ -70,8 +70,12 @@ public interface ProviderFactory<T extends Provider> {
         return Collections.emptyList();
     }
 
+    /**
+     * Optional method used to declare that a ProviderFactory has a dependency on one or more Providers. If a Provider
+     * is declared here, it is guaranteed that the dependencies {@link #postInit} method will be executed
+     * before this ProviderFactory's {@link #postInit}.
+     */
     default Set<Class<? extends Provider>> dependsOn() {
         return Set.of();
     }
-
 }
