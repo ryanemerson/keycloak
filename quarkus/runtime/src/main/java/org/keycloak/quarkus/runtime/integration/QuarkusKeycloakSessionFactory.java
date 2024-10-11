@@ -19,11 +19,13 @@ package org.keycloak.quarkus.runtime.integration;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 
 import org.keycloak.Config;
-import org.keycloak.connections.jpa.JpaConnectionProvider;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.provider.Provider;
 import org.keycloak.provider.ProviderFactory;
@@ -100,20 +102,44 @@ public final class QuarkusKeycloakSessionFactory extends DefaultKeycloakSessionF
         if (componentFactoryPF != null) {
             componentFactoryPF.postInit(this);
         }
-        // Init JpaConnectionProvider first to ensure that DB resources are available to all other providers
-        ProviderFactory<JpaConnectionProvider> jpaUpdaterProvider = getProviderFactory(JpaConnectionProvider.class);
-        jpaUpdaterProvider.postInit(this);
-        for (Map<String, ProviderFactory> f : factoriesMap.values()) {
-            for (ProviderFactory factory : f.values()) {
-                if (factory != componentFactoryPF && factory != jpaUpdaterProvider) {
-                    factory.postInit(this);
-                }
+
+        Set<Class<? extends Provider>> initializedProviders = new HashSet<>();
+        Stack<ProviderFactory> recursionPrevention = new Stack<>();
+
+        for(Map.Entry<Class<? extends Provider>, Map<String, ProviderFactory>>  f : factoriesMap.entrySet()) {
+            if (initializedProviders.contains(f.getKey())) {
+                continue;
             }
+            initializeProviders(f.getKey(), f.getValue(), initializedProviders, recursionPrevention);
         }
 
         AdminPermissions.registerListener(this);
         // make the session factory ready for hot deployment
         ProviderManagerRegistry.SINGLETON.setDeployer(this);
+    }
+
+    private void initializeProviders(Class<? extends Provider> provider, Map<String, ProviderFactory> factories, Set<Class<? extends Provider>> intializedProviders, Stack<ProviderFactory> recursionPrevention) {
+        for (ProviderFactory<?> factory : factories.values()) {
+            if (factory != componentFactoryPF) {
+                factory.dependsOn().forEach(o -> {
+                            if (recursionPrevention.contains(factory)) {
+                                List<String> stackForException = recursionPrevention.stream().map(providerFactory -> providerFactory.getClass().getName()).toList();
+                                throw new RuntimeException("Detected a recursive dependency on provider " + o.getName() +
+                                                           " while the initialization of the following provider factories is ongoing: " + stackForException);
+                            }
+                            Map<String, ProviderFactory> f = factoriesMap.get(o);
+                            if (f == null) {
+                                throw new RuntimeException("No provider factories exists for provider " + o.getSimpleName());
+                            }
+                            recursionPrevention.push(factory);
+                            initializeProviders(o, f, intializedProviders, recursionPrevention);
+                            recursionPrevention.pop();
+                        }
+                );
+                factory.postInit(this);
+                intializedProviders.add(provider);
+            }
+        }
     }
 
     private ProviderFactory lookupProviderFactory(Class<? extends ProviderFactory> factoryClazz) {

@@ -19,6 +19,8 @@ package org.keycloak.provider;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+
 import org.keycloak.Config;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
@@ -67,4 +69,9 @@ public interface ProviderFactory<T extends Provider> {
     default List<ProviderConfigProperty> getConfigMetadata() {
         return Collections.emptyList();
     }
+
+    default Set<Class<? extends Provider>> dependsOn() {
+        return Set.of();
+    }
+
 }
