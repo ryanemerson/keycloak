@@ -27,8 +27,6 @@ import org.keycloak.cluster.ClusterSpi;
 import org.keycloak.common.Profile;
 import org.keycloak.common.profile.PropertiesProfileConfigResolver;
 import org.keycloak.common.util.Time;
-import org.keycloak.component.ComponentFactoryProviderFactory;
-import org.keycloak.component.ComponentFactorySpi;
 import org.keycloak.events.EventStoreSpi;
 import org.keycloak.executors.DefaultExecutorsProviderFactory;
 import org.keycloak.executors.ExecutorsSpi;
@@ -51,7 +49,6 @@ import org.keycloak.provider.Provider;
 import org.keycloak.provider.ProviderFactory;
 import org.keycloak.provider.ProviderManager;
 import org.keycloak.provider.Spi;
-import org.keycloak.services.DefaultComponentFactoryProviderFactory;
 import org.keycloak.services.DefaultKeycloakSessionFactory;
 import org.keycloak.services.resteasy.ResteasyKeycloakSessionFactory;
 import org.keycloak.storage.DatastoreProviderFactory;
@@ -235,7 +232,6 @@ public abstract class KeycloakModelTest {
       .add(PolicySpi.class)
       .add(ClientScopeSpi.class)
       .add(ClientSpi.class)
-      .add(ComponentFactorySpi.class)
       .add(ClusterSpi.class)
       .add(EventStoreSpi.class)
       .add(ExecutorsSpi.class)
@@ -252,7 +248,6 @@ public abstract class KeycloakModelTest {
       .build();
 
     private static final Set<Class<? extends ProviderFactory>> ALLOWED_FACTORIES = ImmutableSet.<Class<? extends ProviderFactory>>builder()
-      .add(ComponentFactoryProviderFactory.class)
       .add(DefaultAuthorizationProviderFactory.class)
       .add(PolicyProviderFactory.class)
       .add(DefaultExecutorsProviderFactory.class)
@@ -302,9 +297,6 @@ public abstract class KeycloakModelTest {
         int factoryIndex = FACTORY_COUNT.incrementAndGet();
         String threadName = Thread.currentThread().getName();
         CONFIG.reset();
-        CONFIG.spi(ComponentFactorySpi.NAME)
-          .provider(DefaultComponentFactoryProviderFactory.PROVIDER_ID)
-            .config("cachingForced", "true");
         MODEL_PARAMETERS.forEach(m -> m.updateConfig(CONFIG));
 
         LOG.debugf("Creating factory %d in %s using the following configuration:\n    %s", factoryIndex, threadName, CONFIG);

@@ -29,15 +29,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.jboss.logging.Logger;
 import org.keycloak.Config;
 import org.keycloak.common.util.MultivaluedHashMap;
-import org.keycloak.component.ComponentFactoryProvider;
-import org.keycloak.component.ComponentFactoryProviderFactory;
-import org.keycloak.component.ComponentModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.provider.EnvironmentDependentProviderFactory;
@@ -74,8 +70,6 @@ public abstract class DefaultKeycloakSessionFactory implements KeycloakSessionFa
      */
     private Long clientStorageProviderTimeout;
     private Long roleStorageProviderTimeout;
-
-    protected ComponentFactoryProviderFactory componentFactoryPF;
 
     @Override
     public void register(ProviderEventListener listener) {
@@ -128,18 +122,10 @@ public abstract class DefaultKeycloakSessionFactory implements KeycloakSessionFa
     }
 
     protected void initProviderFactories() {
-        initProviderFactories(true, factoriesMap);
+        initProviderFactories(factoriesMap);
     }
 
-    protected void initProviderFactories(boolean updateComponentFactory, Map<Class<? extends Provider>, Map<String, ProviderFactory>> factories) {
-        if (updateComponentFactory) {
-            // Component factory must be initialized first, so that postInit in other factories can use component factories
-            updateComponentFactoryProviderFactory();
-            if (componentFactoryPF != null) {
-                componentFactoryPF.postInit(this);
-            }
-        }
-
+    protected void initProviderFactories(Map<Class<? extends Provider>, Map<String, ProviderFactory>> factories) {
         Set<Class<? extends Provider>> initializedProviders = new HashSet<>();
         Stack<ProviderFactory> recursionPrevention = new Stack<>();
 
@@ -153,9 +139,6 @@ public abstract class DefaultKeycloakSessionFactory implements KeycloakSessionFa
 
     private void initializeProviders(Class<? extends Provider> provider, Map<Class<? extends Provider>, Map<String, ProviderFactory>> factories, Set<Class<? extends Provider>> intializedProviders, Stack<ProviderFactory> recursionPrevention) {
         for (ProviderFactory<?> factory : factories.get(provider).values()) {
-            if (factory == componentFactoryPF)
-                continue;
-
             for (Class<? extends Provider> providerDep : factory.dependsOn()) {
                 if (recursionPrevention.contains(factory)) {
                     List<String> stackForException = recursionPrevention.stream().map(providerFactory -> providerFactory.getClass().getName()).toList();
@@ -216,13 +199,11 @@ public abstract class DefaultKeycloakSessionFactory implements KeycloakSessionFa
         factoriesMap = copy;
         // need to update the default provider map
         checkProvider();
-        boolean cfChanged = false;
         for (ProviderFactory factory : undeployed) {
             invalidate(null, ObjectType.PROVIDER_FACTORY, factory.getClass());
             factory.close();
-            cfChanged |= (componentFactoryPF == factory);
         }
-        initProviderFactories(cfChanged, deployed);
+        initProviderFactories(deployed);
 
         if (pm.getInfo().hasThemes() || pm.getInfo().hasThemeResources()) {
             themeManagerFactory.clearCache();
@@ -396,13 +377,6 @@ public abstract class DefaultKeycloakSessionFactory implements KeycloakSessionFa
     }
 
     @Override
-    public <T extends Provider> ProviderFactory<T> getProviderFactory(Class<T> clazz, String realmId, String componentId, Function<KeycloakSessionFactory, ComponentModel> modelGetter) {
-        return (this.componentFactoryPF == null)
-          ? null
-          : this.componentFactoryPF.getProviderFactory(clazz, realmId, componentId, modelGetter);
-    }
-
-    @Override
     public void invalidate(KeycloakSession session, InvalidableObjectType type, Object... ids) {
         factoriesMap.values().stream()
           .map(Map::values)
@@ -460,20 +434,6 @@ public abstract class DefaultKeycloakSessionFactory implements KeycloakSessionFa
         return packageName.startsWith("org.keycloak") && !packageName.startsWith("org.keycloak.examples");
     }
 
-    public long getClientStorageProviderTimeout() {
-        if (clientStorageProviderTimeout == null) {
-            clientStorageProviderTimeout = Config.scope("client").getLong("storageProviderTimeout", 3000L);
-        }
-        return clientStorageProviderTimeout;
-    }
-
-    public long getRoleStorageProviderTimeout() {
-        if (roleStorageProviderTimeout == null) {
-            roleStorageProviderTimeout = Config.scope("role").getLong("storageProviderTimeout", 3000L);
-        }
-        return roleStorageProviderTimeout;
-    }
-
     /**
      * @return timestamp of Keycloak server startup
      */
@@ -481,9 +441,4 @@ public abstract class DefaultKeycloakSessionFactory implements KeycloakSessionFa
     public long getServerStartupTimestamp() {
         return serverStartupTimestamp;
     }
-
-    protected void updateComponentFactoryProviderFactory() {
-        this.componentFactoryPF = (ComponentFactoryProviderFactory) getProviderFactory(ComponentFactoryProvider.class);
-    }
-
 }

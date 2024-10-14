@@ -8,8 +8,6 @@ import org.keycloak.common.util.MultivaluedHashMap;
 import org.keycloak.representations.idm.ComponentRepresentation;
 import org.keycloak.testsuite.admin.ApiUtil;
 import org.keycloak.testsuite.arquillian.ContainerInfo;
-import org.keycloak.testsuite.components.amphibian.TestAmphibianProvider;
-import org.keycloak.testsuite.components.amphibian.TestAmphibianProviderFactoryImpl;
 
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
@@ -39,9 +37,6 @@ public class ComponentInvalidationClusterTest extends AbstractInvalidationCluste
         ComponentRepresentation comp = new ComponentRepresentation();
         MultivaluedHashMap<String, String> config = new MultivaluedHashMap<>();
         comp.setName("comp_" + RandomStringUtils.randomAlphabetic(5));
-
-        comp.setProviderId(TestAmphibianProviderFactoryImpl.PROVIDER_ID);
-        comp.setProviderType(TestAmphibianProvider.class.getName());
 
         config.putSingle("secret", "Secret");
         config.putSingle("required", "required-value");
@@ -180,7 +175,7 @@ public class ComponentInvalidationClusterTest extends AbstractInvalidationCluste
     protected void assertComponentHasCorrectConfig(ComponentRepresentation testEntityOnFailNode, ContainerInfo survivorNode) throws NumberFormatException {
         log.debug(String.format("Attempt to verify %s component reinstantiation on %s (%s)", getEntityType(testEntityOnFailNode), survivorNode, survivorNode.getContextRoot()));
         Map<String, Map<String, Object>> config = getTestingClientFor(survivorNode).testing(testRealmName).getTestAmphibianComponentDetails();
-        
+
         assertThat(config, hasKey(testEntityOnFailNode.getName()));
         Map<String, Object> c = config.get(testEntityOnFailNode.getName());
         assertThat(c, hasEntry("number", Integer.valueOf(testEntityOnFailNode.getConfig().getFirst("number"))));

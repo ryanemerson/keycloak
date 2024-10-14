@@ -19,7 +19,6 @@
 
 package org.keycloak.userprofile;
 
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,13 +35,10 @@ import org.keycloak.Config.Scope;
 import org.keycloak.authentication.requiredactions.TermsAndConditions;
 import org.keycloak.common.Profile;
 import org.keycloak.common.Profile.Feature;
-import org.keycloak.component.AmphibianProviderFactory;
 import org.keycloak.component.ComponentModel;
-import org.keycloak.component.ComponentValidationException;
 import org.keycloak.models.KeycloakContext;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
-import org.keycloak.models.OrganizationModel;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.RequiredActionProviderModel;
 import org.keycloak.models.UserModel;
@@ -57,7 +53,6 @@ import org.keycloak.userprofile.validator.BrokeringFederatedUsernameHasValueVali
 import org.keycloak.userprofile.validator.DuplicateEmailValidator;
 import org.keycloak.userprofile.validator.DuplicateUsernameValidator;
 import org.keycloak.userprofile.validator.EmailExistsAsUsernameValidator;
-import org.keycloak.userprofile.validator.ImmutableAttributeValidator;
 import org.keycloak.userprofile.validator.ReadOnlyAttributeUnchangedValidator;
 import org.keycloak.userprofile.validator.RegistrationEmailAsUsernameEmailValueValidator;
 import org.keycloak.userprofile.validator.RegistrationEmailAsUsernameUsernameValueValidator;
@@ -67,7 +62,6 @@ import org.keycloak.userprofile.validator.UsernameMutationValidator;
 import org.keycloak.validate.ValidatorConfig;
 import org.keycloak.validate.validators.EmailValidator;
 
-import static org.keycloak.common.util.ObjectUtil.isBlank;
 import static org.keycloak.userprofile.DefaultAttributes.READ_ONLY_ATTRIBUTE_KEY;
 import static org.keycloak.userprofile.UserProfileContext.ACCOUNT;
 import static org.keycloak.userprofile.UserProfileContext.IDP_REVIEW;
@@ -76,7 +70,7 @@ import static org.keycloak.userprofile.UserProfileContext.UPDATE_EMAIL;
 import static org.keycloak.userprofile.UserProfileContext.UPDATE_PROFILE;
 import static org.keycloak.userprofile.UserProfileContext.USER_API;
 
-public class DeclarativeUserProfileProviderFactory implements UserProfileProviderFactory, AmphibianProviderFactory<UserProfileProvider> {
+public class DeclarativeUserProfileProviderFactory implements UserProfileProviderFactory {
 
     public static final String CONFIG_ADMIN_READ_ONLY_ATTRIBUTES = "admin-read-only-attributes";
     public static final String CONFIG_READ_ONLY_ATTRIBUTES = "read-only-attributes";
@@ -263,39 +257,6 @@ public class DeclarativeUserProfileProviderFactory implements UserProfileProvide
     }
 
     @Override
-    public List<ProviderConfigProperty> getConfigProperties() {
-        return ProviderConfigurationBuilder.create()
-                .property().name(DeclarativeUserProfileProvider.UP_COMPONENT_CONFIG_KEY)
-                .type(ProviderConfigProperty.STRING_TYPE)
-                .add()
-                .build();
-    }
-
-    @Override
-    public void validateConfiguration(KeycloakSession session, RealmModel realm, ComponentModel model) throws ComponentValidationException {
-        String upConfigJson = model == null ? null : model.get(DeclarativeUserProfileProvider.UP_COMPONENT_CONFIG_KEY);
-
-        if (!isBlank(upConfigJson)) {
-            try {
-                UPConfig upc = UPConfigUtils.parseConfig(upConfigJson);
-                List<String> errors = UPConfigUtils.validate(session, upc);
-
-                if (!errors.isEmpty()) {
-                    throw new ComponentValidationException(errors.toString());
-                }
-            } catch (IOException e) {
-                throw new ComponentValidationException(e.getMessage(), e);
-            }
-        }
-
-        // delete cache so new config is parsed and applied next time it is required
-        // throught #configureUserProfile(metadata, session)
-        if (model != null) {
-            model.removeNote(DeclarativeUserProfileProvider.PARSED_CONFIG_COMPONENT_KEY);
-        }
-    }
-
-    @Override
     public void postInit(KeycloakSessionFactory factory) {
     }
 
@@ -310,11 +271,6 @@ public class DeclarativeUserProfileProviderFactory implements UserProfileProvide
     }
 
     @Override
-    public String getHelpText() {
-        return null;
-    }
-
-    @Override
     public void close() {
 
     }
@@ -322,6 +278,26 @@ public class DeclarativeUserProfileProviderFactory implements UserProfileProvide
     @Override
     public DeclarativeUserProfileProvider create(KeycloakSession session) {
         return new DeclarativeUserProfileProvider(session, this);
+    }
+
+    @Override
+    @Deprecated
+    public UserProfileProvider create(KeycloakSession session, ComponentModel model) {
+        throw new UnsupportedOperationException("Use create(KeycloakSession) instead");
+    }
+
+    @Override
+    public String getHelpText() {
+        return null;
+    }
+
+    @Override
+    public List<ProviderConfigProperty> getConfigProperties() {
+        return ProviderConfigurationBuilder.create()
+              .property().name(DeclarativeUserProfileProvider.UP_COMPONENT_CONFIG_KEY)
+              .type(ProviderConfigProperty.STRING_TYPE)
+              .add()
+              .build();
     }
 
     /**

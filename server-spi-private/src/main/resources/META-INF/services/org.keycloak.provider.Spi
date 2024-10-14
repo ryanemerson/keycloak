@@ -17,7 +17,6 @@
 
 org.keycloak.client.clienttype.ClientTypeManagerSpi
 org.keycloak.client.clienttype.ClientTypeSpi
-org.keycloak.component.ComponentFactorySpi
 org.keycloak.provider.ExceptionConverterSpi
 org.keycloak.models.ClientSpi
 org.keycloak.models.ClientScopeSpi

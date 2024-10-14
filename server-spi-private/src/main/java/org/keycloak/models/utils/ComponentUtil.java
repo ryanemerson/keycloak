@@ -49,10 +49,6 @@ public class ComponentUtil {
         return getComponentConfigProperties(session, component.getProviderType(), component.getProviderId());
     }
 
-    public static ComponentFactory getComponentFactory(KeycloakSession session, ComponentRepresentation component) {
-        return getComponentFactory(session, component.getProviderType(), component.getProviderId());
-    }
-
     public static ComponentFactory getComponentFactory(KeycloakSession session, ComponentModel component) {
         return getComponentFactory(session, component.getProviderType(), component.getProviderId());
     }

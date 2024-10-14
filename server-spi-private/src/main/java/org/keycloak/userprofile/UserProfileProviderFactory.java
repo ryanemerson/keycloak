@@ -17,11 +17,12 @@
 
 package org.keycloak.userprofile;
 
+import org.keycloak.component.ComponentFactory;
 import org.keycloak.provider.ProviderFactory;
 
 /**
  * @author <a href="mailto:markus.till@bosch.io">Markus Till</a>
  */
-public interface UserProfileProviderFactory extends  ProviderFactory<UserProfileProvider> {
+public interface UserProfileProviderFactory extends ProviderFactory<UserProfileProvider>, ComponentFactory<UserProfileProvider, UserProfileProvider> {
 
 }
