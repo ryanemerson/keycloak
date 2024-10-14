@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
@@ -127,25 +128,31 @@ public abstract class DefaultKeycloakSessionFactory implements KeycloakSessionFa
     }
 
     protected void initProviderFactories() {
-        // Component factory must be initialized first, so that postInit in other factories can use component factories
-        updateComponentFactoryProviderFactory();
-        if (componentFactoryPF != null) {
-            componentFactoryPF.postInit(this);
+        initProviderFactories(true, factoriesMap);
+    }
+
+    protected void initProviderFactories(boolean updateComponentFactory, Map<Class<? extends Provider>, Map<String, ProviderFactory>> factories) {
+        if (updateComponentFactory) {
+            // Component factory must be initialized first, so that postInit in other factories can use component factories
+            updateComponentFactoryProviderFactory();
+            if (componentFactoryPF != null) {
+                componentFactoryPF.postInit(this);
+            }
         }
 
         Set<Class<? extends Provider>> initializedProviders = new HashSet<>();
         Stack<ProviderFactory> recursionPrevention = new Stack<>();
 
-        for(Map.Entry<Class<? extends Provider>, Map<String, ProviderFactory>>  f : factoriesMap.entrySet()) {
+        for(Map.Entry<Class<? extends Provider>, Map<String, ProviderFactory>>  f : factories.entrySet()) {
             if (initializedProviders.contains(f.getKey())) {
                 continue;
             }
-            initializeProviders(f.getKey(), f.getValue(), initializedProviders, recursionPrevention);
+            initializeProviders(f.getKey(), factories, initializedProviders, recursionPrevention);
         }
     }
 
-    private void initializeProviders(Class<? extends Provider> provider, Map<String, ProviderFactory> factories, Set<Class<? extends Provider>> intializedProviders, Stack<ProviderFactory> recursionPrevention) {
-        for (ProviderFactory<?> factory : factories.values()) {
+    private void initializeProviders(Class<? extends Provider> provider, Map<Class<? extends Provider>, Map<String, ProviderFactory>> factories, Set<Class<? extends Provider>> intializedProviders, Stack<ProviderFactory> recursionPrevention) {
+        for (ProviderFactory<?> factory : factories.get(provider).values()) {
             if (factory == componentFactoryPF)
                 continue;
 
@@ -155,12 +162,12 @@ public abstract class DefaultKeycloakSessionFactory implements KeycloakSessionFa
                     throw new RuntimeException("Detected a recursive dependency on provider " + providerDep.getName() +
                           " while the initialization of the following provider factories is ongoing: " + stackForException);
                 }
-                Map<String, ProviderFactory> f = factoriesMap.get(providerDep);
+                Map<String, ProviderFactory> f = factories.get(providerDep);
                 if (f == null) {
                     throw new RuntimeException("No provider factories exists for provider " + providerDep.getSimpleName());
                 }
                 recursionPrevention.push(factory);
-                initializeProviders(providerDep, f, intializedProviders, recursionPrevention);
+                initializeProviders(providerDep, factories, intializedProviders, recursionPrevention);
                 recursionPrevention.pop();
             }
             factory.postInit(this);
@@ -182,17 +189,22 @@ public abstract class DefaultKeycloakSessionFactory implements KeycloakSessionFa
     public void deploy(ProviderManager pm) {
         Map<Class<? extends Provider>, Map<String, ProviderFactory>> copy = getFactoriesCopy();
         Map<Class<? extends Provider>, Map<String, ProviderFactory>> newFactories = loadFactories(pm);
-        List<ProviderFactory> deployed = new LinkedList<>();
+        Map<Class<? extends Provider>, Map<String, ProviderFactory>> deployed = new HashMap<>();
         List<ProviderFactory> undeployed = new LinkedList<>();
 
         for (Map.Entry<Class<? extends Provider>, Map<String, ProviderFactory>> entry : newFactories.entrySet()) {
-            Map<String, ProviderFactory> current = copy.get(entry.getKey());
+            Class<? extends Provider> provider = entry.getKey();
+            Map<String, ProviderFactory> current = copy.get(provider);
             if (current == null) {
-                copy.put(entry.getKey(), entry.getValue());
+                copy.put(provider, entry.getValue());
             } else {
-                for (ProviderFactory f : entry.getValue().values()) {
-                    deployed.add(f);
-                    ProviderFactory old = current.remove(f.getId());
+                for (Map.Entry<String, ProviderFactory> e : entry.getValue().entrySet()) {
+                    deployed.compute(provider, (k, v) -> {
+                        Map<String, ProviderFactory> map = Objects.requireNonNullElseGet(v, HashMap::new);
+                        map.put(e.getKey(), e.getValue());
+                        return map;
+                    });
+                    ProviderFactory old = current.remove(e.getValue().getId());
                     if (old != null) {
                         undeployed.add(old);
                     }
@@ -210,18 +222,7 @@ public abstract class DefaultKeycloakSessionFactory implements KeycloakSessionFa
             factory.close();
             cfChanged |= (componentFactoryPF == factory);
         }
-        // Component factory must be initialized first, so that postInit in other factories can use component factories
-        if (cfChanged) {
-            updateComponentFactoryProviderFactory();
-            if (componentFactoryPF != null) {
-                componentFactoryPF.postInit(this);
-            }
-        }
-        for (ProviderFactory factory : deployed) {
-            if (factory != componentFactoryPF) {
-                factory.postInit(this);
-            }
-        }
+        initProviderFactories(cfChanged, deployed);
 
         if (pm.getInfo().hasThemes() || pm.getInfo().hasThemeResources()) {
             themeManagerFactory.clearCache();
