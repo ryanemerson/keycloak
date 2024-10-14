@@ -18,7 +18,7 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
     <changeSet author="keycloak" id="29399-jdbc-ping-default">
-        <createTable tableName="JGROUPSPING">
+        <createTable tableName="JGROUPS_PING">
             <column name="address" type="VARCHAR(200)">
                 <constraints nullable="false" />
             </column>
@@ -31,7 +31,7 @@
             </column>
             <column name="coord" type="BOOLEAN"/>
         </createTable>
-        <addPrimaryKey columnNames="address" constraintName="CONSTRAINT_JGROUPSPING" tableName="JGROUPSPING"/>
+        <addPrimaryKey columnNames="address" constraintName="CONSTRAINT_JGROUPS_PING" tableName="JGROUPS_PING"/>
     </changeSet>
 
 </databaseChangeLog>

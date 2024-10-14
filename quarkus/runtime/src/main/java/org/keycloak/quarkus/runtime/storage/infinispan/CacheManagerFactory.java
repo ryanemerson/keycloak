@@ -388,7 +388,7 @@ public class CacheManagerFactory {
             transportConfig.defaultTransport().stack(transportStack);
         } else if (!stackXmlAttribute.isModified() || jdbcStackName.equals(stackXmlAttribute.get())){
             EntityManager em = keycloakSession.getProvider(JpaConnectionProvider.class).getEntityManager();
-            var tableName = JpaUtils.getTableNameForNativeQuery("JGROUPSPING", em);
+            var tableName = JpaUtils.getTableNameForNativeQuery("JGROUPS_PING", em);
             var attributes = Map.of(
                   // Leave initialize_sql blank as table is already created by Keycloak
                   "initialize_sql", "",
