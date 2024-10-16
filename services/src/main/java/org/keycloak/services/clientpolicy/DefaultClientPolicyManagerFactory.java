@@ -18,10 +18,14 @@
 
 package org.keycloak.services.clientpolicy;
 
+import java.util.Set;
+
 import org.jboss.logging.Logger;
 import org.keycloak.Config;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
+import org.keycloak.provider.Provider;
+import org.keycloak.securityprofile.SecurityProfileProvider;
 
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
@@ -53,5 +57,10 @@ public class DefaultClientPolicyManagerFactory implements ClientPolicyManagerFac
     @Override
     public String getId() {
         return "default";
+    }
+
+    @Override
+    public Set<Class<? extends Provider>> dependsOn() {
+        return Set.of(SecurityProfileProvider.class);
     }
 }

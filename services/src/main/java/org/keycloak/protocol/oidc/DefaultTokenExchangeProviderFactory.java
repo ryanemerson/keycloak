@@ -17,9 +17,13 @@
  */
 package org.keycloak.protocol.oidc;
 
+import java.util.Set;
+
 import org.keycloak.Config;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
+import org.keycloak.provider.Provider;
+import org.keycloak.services.clientpolicy.executor.ClientPolicyExecutorProvider;
 
 /**
  * Default token exchange provider factory
@@ -50,4 +54,8 @@ public class DefaultTokenExchangeProviderFactory implements TokenExchangeProvide
         return "default";
     }
 
+    @Override
+    public Set<Class<? extends Provider>> dependsOn() {
+        return Set.of(ClientPolicyExecutorProvider.class);
+    }
 }
