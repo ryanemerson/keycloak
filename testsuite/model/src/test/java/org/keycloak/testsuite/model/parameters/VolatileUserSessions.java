@@ -18,8 +18,6 @@ package org.keycloak.testsuite.model.parameters;
 
 import org.keycloak.common.Profile;
 import org.keycloak.common.profile.PropertiesProfileConfigResolver;
-import org.keycloak.spi.infinispan.CacheEmbeddedConfigProviderSpi;
-import org.keycloak.spi.infinispan.impl.embedded.DefaultCacheEmbeddedConfigProviderFactory;
 import org.keycloak.testsuite.model.Config;
 import org.keycloak.testsuite.model.KeycloakModelParameters;
 
@@ -34,9 +32,6 @@ public class VolatileUserSessions extends KeycloakModelParameters {
     @Override
     public void updateConfig(Config cf) {
         updateConfigForJpa(cf);
-        cf.spi(CacheEmbeddedConfigProviderSpi.SPI_NAME)
-              .provider(DefaultCacheEmbeddedConfigProviderFactory.PROVIDER_ID)
-              .config(DefaultCacheEmbeddedConfigProviderFactory.CONFIG, "test-ispn-volatile-sessions.xml");
     }
 
     public static void updateConfigForJpa(Config cf) {
