@@ -17,13 +17,9 @@
 
 package org.keycloak.testframework.server;
 
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Objects;
 
-import io.quarkus.bootstrap.utils.BuildToolHelper;
 import org.jboss.logging.Logger;
 import org.keycloak.it.utils.DockerKeycloakDistribution;
 import org.keycloak.testframework.database.JBossLogConsumer;
