@@ -1,5 +1,7 @@
 package org.keycloak.testframework.http;
 
+import java.io.IOException;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -7,14 +9,16 @@ import org.keycloak.testframework.annotations.InjectHttpClient;
 import org.keycloak.testframework.injection.InstanceContext;
 import org.keycloak.testframework.injection.RequestedInstance;
 import org.keycloak.testframework.injection.Supplier;
-
-import java.io.IOException;
+import org.keycloak.testframework.injection.SupplierHelpers;
 
 public class HttpClientSupplier implements Supplier<HttpClient, InjectHttpClient> {
 
     @Override
     public HttpClient getValue(InstanceContext<HttpClient, InjectHttpClient> instanceContext) {
         HttpClientBuilder builder = HttpClientBuilder.create();
+
+        builder.setDefaultCookieStore(SupplierHelpers.getInstance(instanceContext.getAnnotation().cookieStore()));
+
 
         if (!instanceContext.getAnnotation().followRedirects()) {
             builder.disableRedirectHandling();

@@ -18,11 +18,14 @@
 package org.keycloak.tests.compatibility;
 
 import java.time.Duration;
+import java.util.Date;
+import java.util.List;
 
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.testframework.annotations.InjectHttpClient;
@@ -45,12 +48,9 @@ import org.keycloak.testframework.ui.annotations.InjectWebDriver;
 import org.keycloak.testframework.ui.page.LoginPage;
 import org.keycloak.testframework.ui.page.WelcomePage;
 import org.keycloak.testframework.util.ApiUtil;
-import org.keycloak.testsuite.util.oauth.AuthorizationEndpointResponse;
+import org.keycloak.testsuite.util.oauth.AccessTokenResponse;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @KeycloakIntegrationTest
 public class MixedVersionClusterTest {
@@ -58,6 +58,7 @@ public class MixedVersionClusterTest {
     @InjectLoadBalancer
     LoadBalancer loadBalancer;
 
+//    @InjectHttpClient(cookieStore = Cookies.class)
     @InjectHttpClient
     HttpClient httpClient;
 
@@ -119,18 +120,27 @@ public class MixedVersionClusterTest {
 //        System.out.println(code);
 //    }
 
-    @Test
-    public void testLoginLogout() {
-        AuthorizationEndpointResponse response = oauth(0).doLogin(user.getUsername(), user.getPassword());
-        Assertions.assertTrue(response.isRedirected());
+//    @Test
+//    public void testLoginLogout() {
+//        AuthorizationEndpointResponse response = oauth(0).doLogin(user.getUsername(), user.getPassword());
+//        Assertions.assertTrue(response.isRedirected());
+//
+//        String idTokenHint = oauth(1).doAccessTokenRequest(response.getCode()).getIdToken();
+//        oauth(1).logoutForm().idTokenHint(idTokenHint).open();
+//    }
 
-        String idTokenHint = oauth(1).doAccessTokenRequest(response.getCode()).getIdToken();
-        oauth(1).logoutForm().idTokenHint(idTokenHint).open();
+    @Test
+    public void testRefresh() {
+        AccessTokenResponse accessTokenResponse = oauth(0).doPasswordGrantRequest(user.getUsername(), user.getPassword());
+
+        AccessTokenResponse refreshResponse = oauth(0).doRefreshTokenRequest(accessTokenResponse.getRefreshToken());
+        Assertions.assertTrue(refreshResponse.isSuccess());
+        Assertions.assertNotEquals(accessTokenResponse.getAccessToken(), refreshResponse.getAccessToken());
     }
 
+    // TODO replace with just setting baseUrl on OAuthClient?
     private OAuthClient oauth(int index) {
         String baseUrl = loadBalancer.node(index).getBase();
-//        webDriver.get(baseUrl);
 
         String redirectUri = testApp.getRedirectionUri();
         ClientRepresentation testAppClient = new DefaultOAuthClientConfiguration().configure(ClientConfigBuilder.create())
@@ -142,8 +152,34 @@ public class MixedVersionClusterTest {
         ApiUtil.handleCreatedResponse(realm.admin().clients().create(testAppClient));
 
         OAuthClient oAuthClient = new OAuthClient(baseUrl, (CloseableHttpClient) httpClient, webDriver);
-        oAuthClient.config().realm(realm.getName()).client(clientId, clientSecret).redirectUri(redirectUri);
+        oAuthClient.config()
+              .realm(realm.getName())
+              .client(clientId, clientSecret)
+              .redirectUri(redirectUri)
+              .scope("openid profile");
         return oAuthClient;
+    }
+
+    public static class Cookies implements CookieStore {
+        @Override
+        public void addCookie(Cookie cookie) {
+            System.out.println(cookie);
+        }
+
+        @Override
+        public List<Cookie> getCookies() {
+            return List.of();
+        }
+
+        @Override
+        public boolean clearExpired(Date date) {
+            return false;
+        }
+
+        @Override
+        public void clear() {
+            System.out.println("clear cookies");
+        }
     }
 
     public static class OAuthUserConfig implements UserConfig {
