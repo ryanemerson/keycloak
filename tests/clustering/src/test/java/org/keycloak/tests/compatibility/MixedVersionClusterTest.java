@@ -43,6 +43,8 @@ import org.keycloak.testframework.realm.ManagedRealm;
 import org.keycloak.testframework.realm.ManagedUser;
 import org.keycloak.testframework.realm.UserConfig;
 import org.keycloak.testframework.realm.UserConfigBuilder;
+import org.keycloak.testframework.server.KeycloakServerConfig;
+import org.keycloak.testframework.server.KeycloakServerConfigBuilder;
 import org.keycloak.testframework.ui.annotations.InjectPage;
 import org.keycloak.testframework.ui.annotations.InjectWebDriver;
 import org.keycloak.testframework.ui.page.LoginPage;
@@ -52,8 +54,17 @@ import org.keycloak.testsuite.util.oauth.AccessTokenResponse;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-@KeycloakIntegrationTest
+@KeycloakIntegrationTest(config = MixedVersionClusterTest.ServerConfig.class)
 public class MixedVersionClusterTest {
+
+    public static class ServerConfig implements KeycloakServerConfig {
+        @Override
+        public KeycloakServerConfigBuilder configure(KeycloakServerConfigBuilder config) {
+            return config.option("hostname", "http://keycloak.org")
+                  // Require to prevent "Invalid token issuer when interacting with tokens from distinct nodes in the cluster
+                  .option("hostname-backchannel-dynamic", "true");
+        }
+    }
 
     @InjectLoadBalancer
     LoadBalancer loadBalancer;
@@ -130,10 +141,10 @@ public class MixedVersionClusterTest {
 //    }
 
     @Test
-    public void testRefresh() {
+    public void testAccessTokenRefresh() {
         AccessTokenResponse accessTokenResponse = oauth(0).doPasswordGrantRequest(user.getUsername(), user.getPassword());
 
-        AccessTokenResponse refreshResponse = oauth(0).doRefreshTokenRequest(accessTokenResponse.getRefreshToken());
+        AccessTokenResponse refreshResponse = oauth(1).doRefreshTokenRequest(accessTokenResponse.getRefreshToken());
         Assertions.assertTrue(refreshResponse.isSuccess());
         Assertions.assertNotEquals(accessTokenResponse.getAccessToken(), refreshResponse.getAccessToken());
     }
