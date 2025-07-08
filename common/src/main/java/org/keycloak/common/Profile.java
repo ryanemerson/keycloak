@@ -114,7 +114,7 @@ public class Profile {
 
         HOSTNAME_V2("Hostname Options V2", Type.DEFAULT, 2),
 
-        PERSISTENT_USER_SESSIONS("Persistent online user sessions across restarts and upgrades", Type.DEFAULT),
+        PERSISTENT_USER_SESSIONS("Persistent online user sessions across restarts and upgrades", Type.DEFAULT, FeatureUpdatePolicy.SHUTDOWN),
 
         OID4VC_VCI("Support for the OID4VCI protocol as part of OID4VC.", Type.EXPERIMENTAL),
 
@@ -132,8 +132,8 @@ public class Profile {
 
         LOGOUT_ALL_SESSIONS_V1("Logout all sessions logs out only regular sessions", Type.DEPRECATED, 1),
 
-        ROLLING_UPDATES_V1("Rolling Updates", Type.DEFAULT, 1),
-        ROLLING_UPDATES_V2("Rolling Updates for patch releases", Type.PREVIEW, 2),
+        ROLLING_UPDATES_V1("Rolling Updates", Type.DEFAULT, 1, FeatureUpdatePolicy.ROLLING_NO_UPGRADE),
+        ROLLING_UPDATES_V2("Rolling Updates for patch releases", Type.PREVIEW, 2, FeatureUpdatePolicy.ROLLING_NO_UPGRADE),
 
         /**
          * @see <a href="https://github.com/keycloak/keycloak/issues/37967">Deprecate for removal the Instagram social broker</a>.
@@ -146,23 +146,36 @@ public class Profile {
         private final String unversionedKey;
         private final String key;
         private final BooleanSupplier isAvailable;
-
-        private Set<Feature> dependencies;
-        private int version;
+        private final FeatureUpdatePolicy updatePolicy;
+        private final Set<Feature> dependencies;
+        private final int version;
 
         Feature(String label, Type type, Feature... dependencies) {
-            this(label, type, 1, null, dependencies);
+            this(label, type, 1, null, null, dependencies);
+        }
+
+        Feature(String label, Type type, FeatureUpdatePolicy updatePolicy, Feature... dependencies) {
+            this(label, type, 1, null, updatePolicy, dependencies);
+        }
+
+        Feature(String label, Type type, int version, FeatureUpdatePolicy updatePolicy, Feature... dependencies) {
+            this(label, type, version, null, updatePolicy, dependencies);
         }
 
         Feature(String label, Type type, int version, Feature... dependencies) {
-            this(label, type, version, null, dependencies);
+            this(label, type, version, null, null, dependencies);
         }
 
         Feature(String label, Type type, int version, BooleanSupplier isAvailable, Feature... dependencies) {
+            this(label, type, version, isAvailable, null, dependencies);
+        }
+
+        Feature(String label, Type type, int version, BooleanSupplier isAvailable, FeatureUpdatePolicy updatePolicy, Feature... dependencies) {
             this.label = label;
             this.type = type;
             this.version = version;
             this.isAvailable = isAvailable;
+            this.updatePolicy = updatePolicy == null ? FeatureUpdatePolicy.ROLLING : updatePolicy;
             this.key = name().toLowerCase().replaceAll("_", "-");
             if (this.name().endsWith("_V" + version)) {
                 unversionedKey = key.substring(0, key.length() - (String.valueOf(version).length() + 2));
@@ -217,6 +230,10 @@ public class Profile {
 
         public boolean isAvailable() {
             return isAvailable == null || isAvailable.getAsBoolean();
+        }
+
+        public FeatureUpdatePolicy getUpdatePolicy() {
+            return updatePolicy;
         }
 
         public enum Type {
@@ -498,4 +515,12 @@ public class Profile {
         }
     }
 
+    public enum FeatureUpdatePolicy {
+        // Always allow a rolling update when the Feature is enabled/disabled
+        ROLLING,
+        // Allow rolling update, but not when going from V1 to V2 or V2 to V1
+        ROLLING_NO_UPGRADE,
+        // Always require a cluster shutdown when the Feature is enabled/disabled
+        SHUTDOWN;
+    }
 }
