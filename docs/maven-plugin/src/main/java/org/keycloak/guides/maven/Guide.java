@@ -1,5 +1,7 @@
 package org.keycloak.guides.maven;
 
+import java.nio.file.Path;
+
 public class Guide {
 
     private String template;
@@ -8,6 +10,7 @@ public class Guide {
     private String summary;
     private int priority = Integer.MAX_VALUE;
     private boolean tileVisible = true;
+    private Path path;
 
     public String getTemplate() {
         return template;
@@ -55,5 +58,13 @@ public class Guide {
 
     public void setTileVisible(boolean tileVisible) {
         this.tileVisible = tileVisible;
+    }
+
+    public Path getPath() {
+        return path;
+    }
+
+    public void setPath(Path path) {
+        this.path = path;
     }
 }

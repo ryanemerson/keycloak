@@ -1,6 +1,6 @@
-introduction
-concepts-multi-site
-bblocks-multi-site
+multi-site/introduction
+multi-site/concepts-multi-site
+multi-site/bblocks-multi-site
 concepts-database-connections
 concepts-threads
 concepts-memory-and-cpu-sizing

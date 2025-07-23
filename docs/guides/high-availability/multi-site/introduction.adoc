@@ -72,7 +72,7 @@ While equivalent setups should work, you will need to verify the performance and
 We provide functional tests, failure tests and load tests in the https://github.com/keycloak/keycloak-benchmark[Keycloak Benchmark Project].
 </@profile.ifCommunity>
 
-Read more on each item in the <@links.ha id="bblocks-multi-site" /> {section}.
+Read more on each item in the <@links.ha id="multi-site/bblocks-multi-site" /> {section}.
 
 <@profile.ifProduct>
 == Maximum load
@@ -103,7 +103,7 @@ Even with the additional redundancy of the two sites, downtimes can still occur:
 * After certain failure scenarios, manual intervention may be required to restore redundancy by bringing the failed site back online.
 * During certain switchover scenarios, there may be downtime of up to 5 minutes.
 
-For more details on limitations see the <@links.ha id="concepts-multi-site" /> {section}.
+For more details on limitations see the <@links.ha id="multi-site/concepts-multi-site" /> {section}.
 
 == Next steps
 
@@ -114,8 +114,8 @@ Additional performance tuning and security hardening are still recommended when 
 <@profile.ifCommunity>
 == Concept and building block overview
 
-* <@links.ha id="concepts-multi-site" />
-* <@links.ha id="bblocks-multi-site" />
+* <@links.ha id="multi-site/concepts-multi-site" />
+* <@links.ha id="multi-site/bblocks-multi-site" />
 * <@links.ha id="concepts-database-connections" />
 * <@links.ha id="concepts-threads" />
 * <@links.ha id="concepts-memory-and-cpu-sizing" />

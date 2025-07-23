@@ -1,14 +1,19 @@
 package org.keycloak.guides.maven;
 
-import freemarker.template.TemplateException;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.stream.Stream;
+
 import org.apache.maven.plugin.logging.Log;
 import org.keycloak.common.Version;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import freemarker.template.TemplateException;
 
 public class GuideBuilder {
 
@@ -37,22 +42,25 @@ public class GuideBuilder {
             }
         }
 
-        for (String t : srcDir.list((dir, name) -> name.endsWith(".adoc"))) {
-            freeMarker.template(srcDir.getName() + "/" + t, targetDir.getParentFile());
-            if (log != null) {
-                log.info("Templated: " + srcDir.getName() + "/" + t);
-            }
+        Path srcPath = srcDir.toPath();
+        Path partials = srcPath.resolve("partials");
+        List<Path> templatePaths;
+        try (Stream<Path> files = Files.walk(srcDir.toPath())) {
+            templatePaths = files
+                  .filter(Files::isRegularFile)
+                  .filter(p -> !p.startsWith(partials))
+                  .filter(p -> p.getFileName().toString().endsWith(".adoc"))
+                  .toList();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to discover templates in " + srcDir, e);
         }
 
-        File templatesDir = new File(srcDir, "templates");
-        if (templatesDir.isDirectory()) {
-            for (String t : templatesDir.list((dir, name) -> name.endsWith(".adoc"))) {
-                freeMarker.template(srcDir.getName() + "/" + templatesDir.getName() + "/" + t, targetDir.getParentFile());
-                if (log != null) {
-                    log.info("Templated: " + templatesDir.getName() + "/" + t);
-                }
+        for (Path path : templatePaths) {
+            Path relativePath = srcDir.toPath().getParent().relativize(path);
+            freeMarker.template(relativePath.toString(), targetDir.getParentFile());
+            if (log != null) {
+                log.info("Templated: " + relativePath);
             }
         }
     }
-
 }

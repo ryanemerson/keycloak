@@ -26,7 +26,8 @@ public class GuideParser {
             if (importElement != null) {
                 Guide guide = new Guide();
                 Path relativePath = root.relativize(guidePath);
-                guide.setTemplate(relativePath.getFileName().toString());
+                guide.setPath(guidePath);
+                guide.setTemplate(relativePath.toString());
                 guide.setId(relativePath.toString().replaceAll(".adoc", ""));
                 setAttributes(importElement, guide);
                 return guide;

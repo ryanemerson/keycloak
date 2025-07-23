@@ -10,11 +10,11 @@ The following building blocks are needed to set up a multi-site deployment with 
 The building blocks link to a blueprint with an example configuration.
 They are listed in the order in which they need to be installed.
 
-include::partials/blueprint-disclaimer.adoc[]
+include::../partials/blueprint-disclaimer.adoc[]
 
 == Prerequisites
 
-* Understanding the concepts laid out in the <@links.ha id="concepts-multi-site"/> {section}.
+* Understanding the concepts laid out in the <@links.ha id="multi-site/concepts-multi-site"/> {section}.
 
 == Two sites with low-latency connection
 

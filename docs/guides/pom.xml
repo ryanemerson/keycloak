@@ -97,10 +97,13 @@
                             <resources>
                                 <resource>
                                     <directory>${basedir}/</directory>
-                                    <includes>
-                                        <include>**/examples/**/*.*</include>
-                                        <include>**/partials/**/*.*</include>
-                                    </includes>
+                                    <excludes>
+                                        <exclude>**/templates/**/*.*</exclude>
+                                    </excludes>
+<!--                                    <includes>-->
+<!--                                        <include>**/examples/**/*.*</include>-->
+<!--                                        <include>**/partials/**/*.*</include>-->
+<!--                                    </includes>-->
                                 </resource>
                             </resources>
                         </configuration>

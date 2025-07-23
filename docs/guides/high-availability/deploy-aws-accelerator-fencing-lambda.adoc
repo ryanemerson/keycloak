@@ -9,8 +9,8 @@ tileVisible="false" >
 This {section} explains how to resolve split-brain scenarios between two sites in a multi-site deployment.
 It also disables replication if one site fails, so the other site can continue to serve requests.
 
-This deployment is intended to be used with the setup described in the <@links.ha id="concepts-multi-site"/> {section}.
-Use this deployment with the other building blocks outlined in the <@links.ha id="bblocks-multi-site"/> {section}.
+This deployment is intended to be used with the setup described in the <@links.ha id="multi-site/concepts-multi-site"/> {section}.
+Use this deployment with the other building blocks outlined in the <@links.ha id="multi-site/bblocks-multi-site"/> {section}.
 
 include::partials/blueprint-disclaimer.adoc[]
 
