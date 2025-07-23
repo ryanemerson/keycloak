@@ -22,6 +22,7 @@ public class GuideBuilder {
     private final File targetDir;
     private final Log log;
 
+    // TODO convert to use Path
     public GuideBuilder(File srcDir, File targetDir, Log log, Properties properties) throws IOException {
         this.srcDir = srcDir;
         this.targetDir = targetDir;
@@ -57,7 +58,7 @@ public class GuideBuilder {
 
         for (Path path : templatePaths) {
             Path relativePath = srcDir.toPath().getParent().relativize(path);
-            freeMarker.template(relativePath.toString(), targetDir.getParentFile());
+            freeMarker.template(relativePath, targetDir.getParentFile().toPath());
             if (log != null) {
                 log.info("Templated: " + relativePath);
             }

@@ -114,8 +114,8 @@ Additional performance tuning and security hardening are still recommended when 
 <@profile.ifCommunity>
 == Concept and building block overview
 
-* <@links.ha id="multi-site/concepts-multi-site" />
-* <@links.ha id="multi-site/bblocks-multi-site" />
+* <@links.ha id="multi-site-concepts-multi-site" />
+* <@links.ha id="multi-site-bblocks-multi-site" />
 * <@links.ha id="concepts-database-connections" />
 * <@links.ha id="concepts-threads" />
 * <@links.ha id="concepts-memory-and-cpu-sizing" />

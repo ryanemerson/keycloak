@@ -8,7 +8,7 @@
 :guide-tile-visible: ${tileVisible}
 :version: ${version}
 
-include::../attributes.adoc[]
+include::${attributes}
 
 [[${id}]]
 = ${title}

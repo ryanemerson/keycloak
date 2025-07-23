@@ -10,6 +10,7 @@ public class Guide {
     private String summary;
     private int priority = Integer.MAX_VALUE;
     private boolean tileVisible = true;
+    private Path root;
     private Path path;
 
     public String getTemplate() {
@@ -58,6 +59,14 @@ public class Guide {
 
     public void setTileVisible(boolean tileVisible) {
         this.tileVisible = tileVisible;
+    }
+
+    public Path getRoot() {
+        return root;
+    }
+
+    public void setRoot(Path root) {
+        this.root = root;
     }
 
     public Path getPath() {

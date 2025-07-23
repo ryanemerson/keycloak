@@ -10,14 +10,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class FreeMarker {
 
-    private File targetDir;
-    private Map<String, Object> attributes;
-    private Configuration configuration;
+    private final Map<String, Object> attributes;
+    private final Configuration configuration;
 
     public FreeMarker(File srcDir, Map<String, Object> attributes) throws IOException {
         this.attributes = attributes;
@@ -29,20 +31,31 @@ public class FreeMarker {
         configuration.setLogTemplateExceptions(false);
     }
 
-    public void template(String template, File targetDir) throws IOException, TemplateException {
-        Template t = configuration.getTemplate(template);
-        File out = targetDir.toPath().resolve(template).toFile();
+    public void template(Path template, Path target) throws IOException, TemplateException {
+        Template t = configuration.getTemplate(template.toString());
+        Path out = target.resolve(template);
 
-        File parent = out.getParentFile();
-        if (!parent.isDirectory()) {
-            parent.mkdir();
-        }
+        Path parent = out.getParent();
+        if (Files.notExists(parent))
+            Files.createDirectory(parent);
 
         HashMap<String, Object> attrs = new HashMap<>(attributes);
-        attrs.put("id", template.split("/")[1].replace(".adoc", ""));
+        attrs.put("id", id(template));
+        attrs.put("attributes", "../".repeat(template.getNameCount() - 1) + "attributes.adoc[]");
 
-        Writer w = new FileWriter(out, StandardCharsets.UTF_8);
-        t.process(attrs, w);
+        try(Writer w = Files.newBufferedWriter(out, StandardCharsets.UTF_8)) {
+            t.process(attrs, w);
+        }
     }
 
+    private String id(Path templatePath) {
+        Iterator<Path> it = templatePath.iterator();
+        // Ignore the root directory
+        it.next();
+        StringBuilder sb = new StringBuilder();
+        while (it.hasNext()) {
+            sb.append(it.next());
+        }
+        return sb.toString().replace(".adoc", "");
+    }
 }

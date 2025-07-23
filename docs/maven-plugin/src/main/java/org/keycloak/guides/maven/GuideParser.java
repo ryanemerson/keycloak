@@ -26,9 +26,10 @@ public class GuideParser {
             if (importElement != null) {
                 Guide guide = new Guide();
                 Path relativePath = root.relativize(guidePath);
-                guide.setPath(guidePath);
-                guide.setTemplate(relativePath.toString());
                 guide.setId(relativePath.toString().replaceAll(".adoc", ""));
+                guide.setPath(guidePath);
+                guide.setRoot(root);
+                guide.setTemplate(relativePath.toString());
                 setAttributes(importElement, guide);
                 return guide;
             }
@@ -81,5 +82,4 @@ public class GuideParser {
             }
         }
     }
-
 }
