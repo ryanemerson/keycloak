@@ -42,6 +42,7 @@ public class FreeMarker {
         HashMap<String, Object> attrs = new HashMap<>(attributes);
         attrs.put("id", id(template));
         attrs.put("attributes", "../".repeat(template.getNameCount() - 1) + "attributes.adoc[]");
+        attrs.put("parent", template.getNameCount() > 2 ? template.getName(1).toString() : "");
 
         try(Writer w = Files.newBufferedWriter(out, StandardCharsets.UTF_8)) {
             t.process(attrs, w);
