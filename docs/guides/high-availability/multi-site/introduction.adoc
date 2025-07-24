@@ -90,7 +90,7 @@ We regularly test {project_name} with the following load:
 While we did not see a hard limit in our tests with these values, we ask you to test for higher volumes with horizontally and vertically scaled {project_name} name instances and databases.
 </@profile.ifCommunity>
 
-See the <@links.ha id="concepts-memory-and-cpu-sizing" /> {section} for more information.
+See the <@links.ha id="multisiteconcepts-memory-and-cpu-sizing" /> {section} for more information.
 
 == Limitations
 
@@ -116,25 +116,25 @@ Additional performance tuning and security hardening are still recommended when 
 
 * <@links.ha id="multi-site-concepts-multi-site" />
 * <@links.ha id="multi-site-bblocks-multi-site" />
-* <@links.ha id="concepts-database-connections" />
-* <@links.ha id="concepts-threads" />
-* <@links.ha id="concepts-memory-and-cpu-sizing" />
-* <@links.ha id="concepts-infinispan-cli-batch" />
+* <@links.ha id="multisiteconcepts-database-connections" />
+* <@links.ha id="multisiteconcepts-threads" />
+* <@links.ha id="multisiteconcepts-memory-and-cpu-sizing" />
+* <@links.ha id="multisiteconcepts-infinispan-cli-batch" />
 
 == Blueprints for building blocks
 
-* <@links.ha id="deploy-aurora-multi-az" />
-* <@links.ha id="deploy-infinispan-kubernetes-crossdc" />
-* <@links.ha id="deploy-keycloak-kubernetes" />
-* <@links.ha id="deploy-aws-accelerator-loadbalancer" />
-* <@links.ha id="deploy-aws-accelerator-fencing-lambda" />
+* <@links.ha id="multi-sitedeploy-aurora-multi-az" />
+* <@links.ha id="multi-sitedeploy-infinispan-kubernetes-crossdc" />
+* <@links.ha id="multi-sitedeploy-keycloak-kubernetes" />
+* <@links.ha id="multi-sitedeploy-aws-accelerator-loadbalancer" />
+* <@links.ha id="multi-sitedeploy-aws-accelerator-fencing-lambda" />
 
 == Operational procedures
 
-* <@links.ha id="operate-synchronize" />
-* <@links.ha id="operate-site-offline" />
-* <@links.ha id="operate-site-online" />
-* <@links.ha id="health-checks-multi-site" />
+* <@links.ha id="multi-siteoperate-synchronize" />
+* <@links.ha id="multi-siteoperate-site-offline" />
+* <@links.ha id="multi-siteoperate-site-online" />
+* <@links.ha id="multi-sitehealth-checks-multi-site" />
 
 </@profile.ifCommunity>
 

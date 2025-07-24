@@ -8,7 +8,7 @@ tileVisible="false" >
 
 
 This section is intended when you want to understand the considerations and best practices on how to configure thread pools connection pools for {project_name}.
-For a configuration where this is applied, visit <@links.ha id="deploy-keycloak-kubernetes" />.
+For a configuration where this is applied, visit <@links.ha id="multi-sitedeploy-keycloak-kubernetes" />.
 
 == Concepts
 
@@ -25,7 +25,7 @@ Therefore, the use of OpenJDK 21 is recommended.
 
 {project_name} requests, as well as blocking probes, are handled by an executor pool. Depending on the available CPU cores, it has a maximum size of 50 or more threads.
 Threads are created as needed, and will end when no longer needed, so the system will scale up and down automatically.
-{project_name} allows configuring the maximum thread pool size by the link:{links_server_all-config_url}?q=http-pool-max-threads[`http-pool-max-threads`] configuration option. See <@links.ha id="deploy-keycloak-kubernetes" /> for an example.
+{project_name} allows configuring the maximum thread pool size by the link:{links_server_all-config_url}?q=http-pool-max-threads[`http-pool-max-threads`] configuration option. See <@links.ha id="multi-sitedeploy-keycloak-kubernetes" /> for an example.
 
 When running on Kubernetes, adjust the number of worker threads to avoid creating more load than what the CPU limit allows for the Pod to avoid throttling, which would lead to congestion.
 When running on physical machines, adjust the number of worker threads to avoid creating more load than the node can handle to avoid congestion.

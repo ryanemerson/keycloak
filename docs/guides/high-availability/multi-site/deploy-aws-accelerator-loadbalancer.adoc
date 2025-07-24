@@ -11,7 +11,7 @@ This topic describes the procedure required to deploy an AWS Global Accelerator 
 This deployment is intended to be used with the setup described in the <@links.ha id="multi-site/concepts-multi-site"/> {section}.
 Use this deployment with the other building blocks outlined in the <@links.ha id="multi-site/bblocks-multi-site"/> {section}.
 
-include::partials/blueprint-disclaimer.adoc[]
+include::../partials/blueprint-disclaimer.adoc[]
 
 == Audience
 
@@ -298,7 +298,7 @@ To verify that the Global Accelerator is correctly configured to connect to the 
 
 == Further reading
 
-* <@links.ha id="operate-site-online" />
-* <@links.ha id="operate-site-offline" />
+* <@links.ha id="multi-siteoperate-site-online" />
+* <@links.ha id="multi-siteoperate-site-offline" />
 
 </@tmpl.guide>

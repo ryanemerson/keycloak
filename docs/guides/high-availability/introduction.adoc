@@ -1,0 +1,15 @@
+<#import "/templates/guide.adoc" as tmpl>
+<#import "/templates/links.adoc" as links>
+<#import "/templates/profile.adoc" as profile>
+
+<@tmpl.guide
+title="Keycloak High Availability Overview"
+summary="TODO" >
+
+<@profile.ifCommunity>
+\\ TODO fix id to use hyhen between parent and id
+* <@links.ha id="multi-azintroduction" />
+* <@links.ha id="multi-siteintroduction" />
+</@profile.ifCommunity>
+
+</@tmpl.guide>

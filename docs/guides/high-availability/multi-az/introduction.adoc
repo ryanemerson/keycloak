@@ -1,0 +1,11 @@
+<#import "/templates/guide.adoc" as tmpl>
+<#import "/templates/links.adoc" as links>
+<#import "/templates/profile.adoc" as profile>
+
+<@tmpl.guide
+title="Multi AZ Deployments"
+summary="TODO" >
+
+TODO
+
+</@tmpl.guide>
