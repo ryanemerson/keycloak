@@ -1,10 +1,3 @@
-<#import "/templates/guide.adoc" as tmpl>
-<#import "/templates/links.adoc" as links>
-
-<@tmpl.guide
-title="Deploying AWS Aurora in multiple availability zones"
-summary="Deploy an AWS Aurora as the database building block in a multi-site deployment."
-tileVisible="false" >
 
 This topic describes how to deploy an Aurora regional deployment of a PostgreSQL instance across multiple availability zones to tolerate one or more availability zone failures in a given AWS region.
 
@@ -58,9 +51,3 @@ Now that an Aurora database has been established and linked with all of your ROS
 <<aurora-writer-url, Aurora writer endpoint URL>>.
 
 . Ensure that the Secrets referenced by `spec.db.usernameSecret` and `spec.db.passwordSecret` contain usernames and passwords defined when creating Aurora.
-
-</@tmpl.guide>
-
-== Next steps
-
-After successful deployment of the Aurora database continue with <@links.ha id="multi-site-deploy-infinispan-kubernetes-crossdc" />

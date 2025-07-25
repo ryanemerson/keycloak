@@ -123,7 +123,7 @@ Additional performance tuning and security hardening are still recommended when 
 
 == Blueprints for building blocks
 
-* <@links.ha id="multi-site-deploy-aurora-multi-az" />
+* <@links.ha id="multi-site-deploy-aurora" />
 * <@links.ha id="multi-site-deploy-infinispan-kubernetes-crossdc" />
 * <@links.ha id="multi-site-deploy-keycloak-kubernetes" />
 * <@links.ha id="multi-site-deploy-aws-accelerator-loadbalancer" />

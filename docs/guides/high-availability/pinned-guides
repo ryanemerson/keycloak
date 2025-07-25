@@ -1,5 +1,6 @@
 introduction
 multi-az/introduction
+multi-az/deploy-aurora
 multi-site/introduction
 multi-site/concepts-multi-site
 multi-site/bblocks-multi-site
@@ -7,7 +8,7 @@ multi-site/concepts-database-connections
 multi-site/concepts-threads
 multi-site/concepts-memory-and-cpu-sizing
 multi-site/concepts-infinispan-cli-batch
-multi-site/deploy-aurora-multi-az
+multi-site/deploy-aurora
 multi-site/deploy-infinispan-kubernetes-crossdc
 multi-site/deploy-keycloak-kubernetes
 multi-site/deploy-aws-accelerator-loadbalancer

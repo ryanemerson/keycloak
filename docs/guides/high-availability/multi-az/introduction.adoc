@@ -6,6 +6,9 @@
 title="Multi AZ Deployments"
 summary="TODO" >
 
-TODO
+<@profile.ifCommunity>
+== Blueprints for building blocks
+* <@links.ha id="multi-az-deploy-aurora" />
+</@profile.ifCommunity>
 
 </@tmpl.guide>

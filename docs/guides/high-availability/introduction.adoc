@@ -9,7 +9,6 @@ summary="TODO" >
 <@profile.ifCommunity>
 * <@links.ha id="multi-az-introduction" />
 * <@links.ha id="multi-site-introduction" />
-* <@links.ha id="multi-site-introduction" />
 </@profile.ifCommunity>
 
 </@tmpl.guide>

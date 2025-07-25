@@ -1,0 +1,15 @@
+<#import "/templates/guide.adoc" as tmpl>
+<#import "/templates/links.adoc" as links>
+
+<@tmpl.guide
+title="Deploying AWS Aurora in multiple availability zones"
+summary="Deploy an AWS Aurora as the database building block in a multi-az deployment."
+tileVisible="false" >
+
+<#include "../partials/aurora/aurora-deploy.adoc" />
+
+</@tmpl.guide>
+
+== Next steps
+
+After successful deployment of the Aurora database continue with <@links.ha id="multi-az-deploy-infinispan-kubernetes-multi-az" />
