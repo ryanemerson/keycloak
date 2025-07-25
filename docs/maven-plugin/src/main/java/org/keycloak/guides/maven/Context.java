@@ -98,7 +98,7 @@ public class Context {
             for (String l = br.readLine(); l != null; l = br.readLine()) {
                 l = l.trim();
                 if (!l.isEmpty()) {
-                    priorities.put(l, c);
+                    priorities.put(Guide.toId(l), c);
                 }
                 c++;
             }

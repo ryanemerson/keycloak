@@ -145,6 +145,6 @@ Therefore, tradeoffs exist between high availability and consistency. The focus 
 
 == Next steps
 
-Continue reading in the <@links.ha id="multi-site/bblocks-multi-site" /> {section} to find blueprints for the different building blocks.
+Continue reading in the <@links.ha id="multi-site-bblocks-multi-site" /> {section} to find blueprints for the different building blocks.
 
 </@tmpl.guide>

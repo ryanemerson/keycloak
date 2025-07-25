@@ -72,7 +72,7 @@ While equivalent setups should work, you will need to verify the performance and
 We provide functional tests, failure tests and load tests in the https://github.com/keycloak/keycloak-benchmark[Keycloak Benchmark Project].
 </@profile.ifCommunity>
 
-Read more on each item in the <@links.ha id="multi-site/bblocks-multi-site" /> {section}.
+Read more on each item in the <@links.ha id="multi-site-bblocks-multi-site" /> {section}.
 
 <@profile.ifProduct>
 == Maximum load
@@ -90,7 +90,7 @@ We regularly test {project_name} with the following load:
 While we did not see a hard limit in our tests with these values, we ask you to test for higher volumes with horizontally and vertically scaled {project_name} name instances and databases.
 </@profile.ifCommunity>
 
-See the <@links.ha id="multisiteconcepts-memory-and-cpu-sizing" /> {section} for more information.
+See the <@links.ha id="multi-site-concepts-memory-and-cpu-sizing" /> {section} for more information.
 
 == Limitations
 
@@ -103,7 +103,7 @@ Even with the additional redundancy of the two sites, downtimes can still occur:
 * After certain failure scenarios, manual intervention may be required to restore redundancy by bringing the failed site back online.
 * During certain switchover scenarios, there may be downtime of up to 5 minutes.
 
-For more details on limitations see the <@links.ha id="multi-site/concepts-multi-site" /> {section}.
+For more details on limitations see the <@links.ha id="multi-site-concepts-multi-site" /> {section}.
 
 == Next steps
 
@@ -116,25 +116,25 @@ Additional performance tuning and security hardening are still recommended when 
 
 * <@links.ha id="multi-site-concepts-multi-site" />
 * <@links.ha id="multi-site-bblocks-multi-site" />
-* <@links.ha id="multisiteconcepts-database-connections" />
-* <@links.ha id="multisiteconcepts-threads" />
-* <@links.ha id="multisiteconcepts-memory-and-cpu-sizing" />
-* <@links.ha id="multisiteconcepts-infinispan-cli-batch" />
+* <@links.ha id="multi-site-concepts-database-connections" />
+* <@links.ha id="multi-site-concepts-threads" />
+* <@links.ha id="multi-site-concepts-memory-and-cpu-sizing" />
+* <@links.ha id="multi-site-concepts-infinispan-cli-batch" />
 
 == Blueprints for building blocks
 
-* <@links.ha id="multi-sitedeploy-aurora-multi-az" />
-* <@links.ha id="multi-sitedeploy-infinispan-kubernetes-crossdc" />
-* <@links.ha id="multi-sitedeploy-keycloak-kubernetes" />
-* <@links.ha id="multi-sitedeploy-aws-accelerator-loadbalancer" />
-* <@links.ha id="multi-sitedeploy-aws-accelerator-fencing-lambda" />
+* <@links.ha id="multi-site-deploy-aurora-multi-az" />
+* <@links.ha id="multi-site-deploy-infinispan-kubernetes-crossdc" />
+* <@links.ha id="multi-site-deploy-keycloak-kubernetes" />
+* <@links.ha id="multi-site-deploy-aws-accelerator-loadbalancer" />
+* <@links.ha id="multi-site-deploy-aws-accelerator-fencing-lambda" />
 
 == Operational procedures
 
-* <@links.ha id="multi-siteoperate-synchronize" />
-* <@links.ha id="multi-siteoperate-site-offline" />
-* <@links.ha id="multi-siteoperate-site-online" />
-* <@links.ha id="multi-sitehealth-checks-multi-site" />
+* <@links.ha id="multi-site-operate-synchronize" />
+* <@links.ha id="multi-site-operate-site-offline" />
+* <@links.ha id="multi-site-operate-site-online" />
+* <@links.ha id="multi-site-health-checks-multi-site" />
 
 </@profile.ifCommunity>
 

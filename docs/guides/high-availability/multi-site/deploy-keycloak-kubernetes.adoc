@@ -8,26 +8,26 @@ tileVisible="false" >
 
 This guide describes advanced {project_name} configurations for Kubernetes which are load tested and will recover from single Pod failures.
 
-These instructions are intended for use with the setup described in the <@links.ha id="multi-site/concepts-multi-site"/> {section}.
-Use it together with the other building blocks outlined in the <@links.ha id="multi-site/bblocks-multi-site"/> {section}.
+These instructions are intended for use with the setup described in the <@links.ha id="multi-site-concepts-multi-site"/> {section}.
+Use it together with the other building blocks outlined in the <@links.ha id="multi-site-bblocks-multi-site"/> {section}.
 
 == Prerequisites
 
 * OpenShift or Kubernetes cluster running.
 * Understanding of a <@links.operator id="basic-deployment" /> of {project_name} with the {project_name} Operator.
-* Aurora AWS database deployed using the <@links.ha id="multi-sitedeploy-aurora-multi-az" /> {section}.
-* {jdgserver_name} server deployed using the <@links.ha id="multi-sitedeploy-infinispan-kubernetes-crossdc" /> {section}.
+* Aurora AWS database deployed using the <@links.ha id="multi-site-deploy-aurora-multi-az" /> {section}.
+* {jdgserver_name} server deployed using the <@links.ha id="multi-site-deploy-infinispan-kubernetes-crossdc" /> {section}.
 * Running {project_name} with OpenJDK 21, which is the default for the containers distributed for {project_name}, as this enabled virtual threads for the JGroups communication.
 
 == Procedure
 
-. Determine the sizing of the deployment using the <@links.ha id="multisiteconcepts-memory-and-cpu-sizing" /> {section}.
+. Determine the sizing of the deployment using the <@links.ha id="multi-site-concepts-memory-and-cpu-sizing" /> {section}.
 
 . Install the {project_name} Operator as described in the <@links.operator id="installation" /> {section}.
 
-. Notice the configuration file below contains options relevant for connecting to the Aurora database from <@links.ha id="multi-sitedeploy-aurora-multi-az" anchor="connecting-aurora-to-keycloak" />
+. Notice the configuration file below contains options relevant for connecting to the Aurora database from <@links.ha id="multi-site-deploy-aurora-multi-az" anchor="connecting-aurora-to-keycloak" />
 
-. Notice the configuration file below options relevant for connecting to the {jdgserver_name} server from <@links.ha id="multi-sitedeploy-infinispan-kubernetes-crossdc" anchor="connecting-infinispan-to-keycloak" />
+. Notice the configuration file below options relevant for connecting to the {jdgserver_name} server from <@links.ha id="multi-site-deploy-infinispan-kubernetes-crossdc" anchor="connecting-infinispan-to-keycloak" />
 
 . Build a custom {project_name} image which is link:{links_server_db_url}#preparing-keycloak-for-amazon-aurora-postgresql[prepared for usage with the Amazon Aurora PostgreSQL database].
 
@@ -40,7 +40,7 @@ include::../examples/generated/keycloak.yaml[tag=keycloak]
 <1> The database connection pool initial, max and min size should be identical to allow statement caching for the database.
 Adjust this number to meet the needs of your system.
 As most requests will not touch the database due to the {project_name} embedded cache, this change can server several hundreds of requests per second.
-See the <@links.ha id="multisiteconcepts-database-connections" /> {section} for details.
+See the <@links.ha id="multi-site-concepts-database-connections" /> {section} for details.
 <2> Specify the URL to your custom {project_name} image. If your image is optimized, set the `startOptimized` flag to `true`.
 <3> Enable additional features for multi-site support like the loadbalancer probe `/lb-check`.
 <4> To be able to analyze the system under load, enable the metrics endpoint.
@@ -71,7 +71,7 @@ All exceeding requests are served with an HTTP 503.
 
 You might consider limiting the value for `http-pool-max-threads` further because multiple concurrent threads will lead to throttling by Kubernetes once the requested CPU limit is reached.
 
-See the <@links.ha id="multisiteconcepts-threads" /> {section} about load shedding for details.
+See the <@links.ha id="multi-site-concepts-threads" /> {section} about load shedding for details.
 
 == Optional: Disable sticky sessions
 

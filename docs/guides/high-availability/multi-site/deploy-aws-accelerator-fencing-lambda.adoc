@@ -9,8 +9,8 @@ tileVisible="false" >
 This {section} explains how to resolve split-brain scenarios between two sites in a multi-site deployment.
 It also disables replication if one site fails, so the other site can continue to serve requests.
 
-This deployment is intended to be used with the setup described in the <@links.ha id="multi-site/concepts-multi-site"/> {section}.
-Use this deployment with the other building blocks outlined in the <@links.ha id="multi-site/bblocks-multi-site"/> {section}.
+This deployment is intended to be used with the setup described in the <@links.ha id="multi-site-concepts-multi-site"/> {section}.
+Use this deployment with the other building blocks outlined in the <@links.ha id="multi-site-bblocks-multi-site"/> {section}.
 
 include::../partials/blueprint-disclaimer.adoc[]
 
@@ -26,8 +26,8 @@ Instead, we leverage "`fencing`" to ensure that when one of the sites is unable 
 In addition to the load balancer configuration, the fencing procedure disables replication between the two {jdgserver_name} clusters to allow serving user requests from the site that remains in the load balancer configuration.
 As a result, the sites will be out-of-sync once the replication has been disabled.
 
-To recover from the out-of-sync state, a manual re-sync is necessary as described in <@links.ha id="multi-siteoperate-synchronize" />.
-This is why a site which is removed via fencing will not be re-added automatically when the network communication failure is resolved. The remove site should only be re-added once the two sites have been synchronized using the outlined procedure <@links.ha id="multi-siteoperate-site-online" />.
+To recover from the out-of-sync state, a manual re-sync is necessary as described in <@links.ha id="multi-site-operate-synchronize" />.
+This is why a site which is removed via fencing will not be re-added automatically when the network communication failure is resolved. The remove site should only be re-added once the two sites have been synchronized using the outlined procedure <@links.ha id="multi-site-operate-site-online" />.
 
 In this {section} we describe how to implement fencing using a combination of https://prometheus.io/docs/alerting/latest/overview/[Prometheus Alerts]
 and AWS Lambda functions.
@@ -276,7 +276,7 @@ aws lambda update-function-configuration \
 +
 <1> The name of the AWS Global Accelerator used by your deployment
 <2> The AWS Region hosting your Kubernetes cluster and Lambda function
-<3> The name of one of your {jdgserver_name} sites as defined in <@links.ha id="multi-sitedeploy-infinispan-kubernetes-crossdc" />
+<3> The name of one of your {jdgserver_name} sites as defined in <@links.ha id="multi-site-deploy-infinispan-kubernetes-crossdc" />
 <4> The {jdgserver_name} endpoint URL associated with the CLUSER_1_NAME site
 <5> The name of the second {jdgserver_name} site
 <6> The {jdgserver_name} endpoint URL associated with the CLUSER_2_NAME site
@@ -369,11 +369,11 @@ kubectl -n ${NAMESPACE} rollout status -w deployment/infinispan-router
 +
 . Inspect the `vendor_jgroups_site_view_status` metric in each site. A value of `1` indicates that the site is reachable.
 +
-. Update the Accelerator EndpointGroup to contain both Endpoints. See the <@links.ha id="multi-siteoperate-site-online" /> {section} for details.
+. Update the Accelerator EndpointGroup to contain both Endpoints. See the <@links.ha id="multi-site-operate-site-online" /> {section} for details.
 
 == Further reading
 
-* <@links.ha id="multi-siteoperate-site-online" />
-* <@links.ha id="multi-siteoperate-site-offline" />
+* <@links.ha id="multi-site-operate-site-online" />
+* <@links.ha id="multi-site-operate-site-offline" />
 
 </@tmpl.guide>

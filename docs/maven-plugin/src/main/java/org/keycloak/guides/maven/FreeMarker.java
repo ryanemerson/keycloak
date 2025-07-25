@@ -49,14 +49,8 @@ public class FreeMarker {
         }
     }
 
-    private String id(Path templatePath) {
-        Iterator<Path> it = templatePath.iterator();
-        // Ignore the root directory
-        it.next();
-        StringBuilder sb = new StringBuilder();
-        while (it.hasNext()) {
-            sb.append(it.next());
-        }
-        return sb.toString().replace(".adoc", "");
+    private String id(Path p) {
+        p = p.getNameCount() > 2 ? p.subpath(1, p.getNameCount()) : p.getName(1);
+        return Guide.toId(p.toString());
     }
 }

@@ -6,7 +6,7 @@ title="Health checks for multi-site deployments"
 summary="Validate the health of a multi-site deployment."
 tileVisible="false" >
 
-When running the <@links.ha id="multi-site/introduction" /> in a Kubernetes environment,
+When running the <@links.ha id="multi-site-introduction" /> in a Kubernetes environment,
 you should automate checks to see if everything is up and running as expected.
 
 This page provides an overview of URLs,

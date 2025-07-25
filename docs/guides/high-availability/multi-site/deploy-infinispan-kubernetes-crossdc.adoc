@@ -15,8 +15,8 @@ For simplicity, this topic uses the minimum configuration possible that allows {
 
 This {section} assumes two {ocp} clusters named `{site-a}` and `{site-b}`.
 
-This is a building block following the concepts described in the <@links.ha id="multi-site/concepts-multi-site" /> {section}.
-See the <@links.ha id="multi-site/introduction" /> {section} for an overview.
+This is a building block following the concepts described in the <@links.ha id="multi-site-concepts-multi-site" /> {section}.
+See the <@links.ha id="multi-site-introduction" /> {section} for an overview.
 
 
 [IMPORTANT]
@@ -278,7 +278,7 @@ kubectl wait --for condition=CrossSiteViewFormed --timeout=300s infinispans.infi
 [#connecting-infinispan-to-keycloak]
 == Connecting {jdgserver_name} with {project_name}
 
-Now that the {jdgserver_name} server is running, here are the relevant {project_name} CR changes necessary to connect it to {project_name}. These changes will be required in the <@links.ha id="multi-sitedeploy-keycloak-kubernetes" /> {section}.
+Now that the {jdgserver_name} server is running, here are the relevant {project_name} CR changes necessary to connect it to {project_name}. These changes will be required in the <@links.ha id="multi-site-deploy-keycloak-kubernetes" /> {section}.
 
 . Create a Secret with the username and password to connect to the external {jdgserver_name} deployment:
 +
@@ -291,7 +291,7 @@ include::../examples/generated/keycloak-ispn.yaml[tag=keycloak-ispn-secret]
 +
 [NOTE]
 ====
-All the memory, resource and database configurations are skipped from the CR below as they have been described in the <@links.ha id="multi-sitedeploy-keycloak-kubernetes" /> {section} already.
+All the memory, resource and database configurations are skipped from the CR below as they have been described in the <@links.ha id="multi-site-deploy-keycloak-kubernetes" /> {section} already.
 Administrators should leave those configurations untouched.
 ====
 +
@@ -314,6 +314,6 @@ In other environments, add the necessary certificates to {project_name}'s trusts
 
 == Next steps
 
-After the Aurora AWS database and {jdgserver_name} are deployed and running, use the procedure in the <@links.ha id="multi-sitedeploy-keycloak-kubernetes" /> {section} to deploy {project_name} and connect it to all previously created building blocks.
+After the Aurora AWS database and {jdgserver_name} are deployed and running, use the procedure in the <@links.ha id="multi-site-deploy-keycloak-kubernetes" /> {section} to deploy {project_name} and connect it to all previously created building blocks.
 
 </@tmpl.guide>

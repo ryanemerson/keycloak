@@ -59,10 +59,10 @@ No action required.
 === AWS Global Accelerator
 
 Once the two sites have been synchronized, it is safe to add the previously offline site back to the Global Accelerator
-EndpointGroup following the steps in the <@links.ha id="multi-siteoperate-site-online" /> {section}.
+EndpointGroup following the steps in the <@links.ha id="multi-site-operate-site-online" /> {section}.
 
 == Further reading
 
-See <@links.ha id="multisiteconcepts-infinispan-cli-batch" />.
+See <@links.ha id="multi-site-concepts-infinispan-cli-batch" />.
 
 </@tmpl.guide>

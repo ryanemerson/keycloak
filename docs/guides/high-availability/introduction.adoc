@@ -7,9 +7,9 @@ title="Keycloak High Availability Overview"
 summary="TODO" >
 
 <@profile.ifCommunity>
-\\ TODO fix id to use hyhen between parent and id
-* <@links.ha id="multi-azintroduction" />
-* <@links.ha id="multi-siteintroduction" />
+* <@links.ha id="multi-az-introduction" />
+* <@links.ha id="multi-site-introduction" />
+* <@links.ha id="multi-site-introduction" />
 </@profile.ifCommunity>
 
 </@tmpl.guide>

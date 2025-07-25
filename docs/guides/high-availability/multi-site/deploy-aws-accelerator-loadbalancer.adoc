@@ -8,8 +8,8 @@ tileVisible="false" >
 
 This topic describes the procedure required to deploy an AWS Global Accelerator to route traffic between multi-site {project_name} deployments.
 
-This deployment is intended to be used with the setup described in the <@links.ha id="multi-site/concepts-multi-site"/> {section}.
-Use this deployment with the other building blocks outlined in the <@links.ha id="multi-site/bblocks-multi-site"/> {section}.
+This deployment is intended to be used with the setup described in the <@links.ha id="multi-site-concepts-multi-site"/> {section}.
+Use this deployment with the other building blocks outlined in the <@links.ha id="multi-site-bblocks-multi-site"/> {section}.
 
 include::../partials/blueprint-disclaimer.adoc[]
 
@@ -298,7 +298,7 @@ To verify that the Global Accelerator is correctly configured to connect to the 
 
 == Further reading
 
-* <@links.ha id="multi-siteoperate-site-online" />
-* <@links.ha id="multi-siteoperate-site-offline" />
+* <@links.ha id="multi-site-operate-site-online" />
+* <@links.ha id="multi-site-operate-site-offline" />
 
 </@tmpl.guide>

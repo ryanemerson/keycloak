@@ -13,6 +13,10 @@ public class Guide {
     private Path root;
     private Path path;
 
+    public static String toId(String path) {
+        return path.replaceAll("/", "-").replaceAll(".adoc", "");
+    }
+
     public String getTemplate() {
         return template;
     }
