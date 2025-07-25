@@ -25,7 +25,7 @@ Use it together with the other building blocks outlined in the <@links.ha id="mu
 
 . Install the {project_name} Operator as described in the <@links.operator id="installation" /> {section}.
 
-. Notice the configuration file below contains options relevant for connecting to the Aurora database from <@links.ha id="multi-site-deploy-aurora-multi-az" anchor="connecting-aurora-to-keycloak" />
+. Notice the configuration file below contains options relevant for connecting to the Aurora database from <@links.ha id="multi-site-deploy-aurora-multi-az" anchor="multi-site-aurora-connecting" />
 
 . Notice the configuration file below options relevant for connecting to the {jdgserver_name} server from <@links.ha id="multi-site-deploy-infinispan-kubernetes-crossdc" anchor="connecting-infinispan-to-keycloak" />
 
