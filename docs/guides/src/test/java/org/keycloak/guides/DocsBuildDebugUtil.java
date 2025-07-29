@@ -28,7 +28,8 @@ public class DocsBuildDebugUtil {
         Properties properties = readPropertiesFromPomXml();
 
         Path usrDir = Paths.get(System.getProperty("user.dir"));
-        for (Path srcDir : GuideMojo.getSourceDirs(usrDir)) {
+        Path guidesRoot = usrDir.resolve("docs/guides");
+        for (Path srcDir : GuideMojo.getSourceDirs(guidesRoot)) {
             Path targetDir = usrDir.resolve("target").resolve("generated-guides").resolve(srcDir.getFileName());
             Files.createDirectories(targetDir);
 
@@ -47,7 +48,11 @@ public class DocsBuildDebugUtil {
         // parse pom.xml file - avoid adding Maven as a dependency here
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(new File("pom.xml"));
-        NodeList propertiesXml = doc.getDocumentElement().getElementsByTagName("properties").item(0).getChildNodes();
+        NodeList propertiesXml = doc.getDocumentElement().getElementsByTagName("properties");
+        if (propertiesXml.getLength() == 0)
+            return properties;
+
+        propertiesXml = propertiesXml.item(0).getChildNodes();
         for(int i = 0; i < propertiesXml.getLength(); ++i) {
             Node item = propertiesXml.item(i);
             if (!(item instanceof Element)) {
