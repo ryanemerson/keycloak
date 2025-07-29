@@ -1,6 +1,5 @@
 <#import "/templates/guide.adoc" as tmpl>
 <#import "/templates/links.adoc" as links>
-<#import "../partials/aurora/aurora-single-site.adoc" as aurora>
 
 <@tmpl.guide
 title="Deploying AWS Aurora in multiple availability zones"
@@ -14,7 +13,7 @@ Use this deployment with the other building blocks outlined in the <@links.ha id
 
 include::../partials/blueprint-disclaimer.adoc[]
 
-<@aurora.single_site "multi-az" />
+<#include "/high-availability/partials/aurora/aurora-single-site.adoc" />
 
 [#connecting-aurora-to-multi-az-keycloak]
 == Connecting Aurora database with {project_name}

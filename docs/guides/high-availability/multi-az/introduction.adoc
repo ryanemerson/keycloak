@@ -3,8 +3,28 @@
 <#import "/templates/profile.adoc" as profile>
 
 <@tmpl.guide
-title="Multi AZ Deployments"
-summary="TODO" >
+title="Multi-AZ Deployments"
+summary="Deploy Keycloak across multiple availability-zones in Kubernetes." >
+
+== When to use a multi-az setup
+TODO
+
+<@profile.ifCommunity>
+== Tested Configuration
+
+We regularly test {project_name} with the following configuration:
+</@profile.ifCommunity>
+<@profile.ifProduct>
+== Supported Configuration
+</@profile.ifProduct>
+
+TODO
+
+== Next steps
+
+The different {sections} introduce the necessary concepts and building blocks.
+For each building block, a blueprint shows how to set a fully functional example.
+Additional performance tuning and security hardening are still recommended when preparing a production setup.
 
 <@profile.ifCommunity>
 == Concept and building block overview
@@ -14,11 +34,10 @@ summary="TODO" >
 * <@links.ha id="multi-az-concepts-database-connections" />
 * <@links.ha id="multi-az-concepts-threads" />
 * <@links.ha id="multi-az-concepts-memory-and-cpu-sizing" />
-* <@links.ha id="multi-az-concepts-infinispan-cli-batch" />
 
 == Blueprints for building blocks
-* <@links.ha id="multi-az-building-blocks" />
 * <@links.ha id="multi-az-deploy-aurora" />
+* <@links.ha id="multi-az-deploy-keycloak" />
 </@profile.ifCommunity>
 
 </@tmpl.guide>

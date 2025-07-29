@@ -7,9 +7,9 @@ summary="Understand concepts for avoiding resource exhaustion and congestion."
 tileVisible="false" >
 
 This section is intended when you want to understand considerations and best practices on how to configure database connection pools for {project_name}.
-For a configuration where this is applied, visit <@links.ha id="multi-site-deploy-keycloak-kubernetes" />.
+For a configuration where this is applied, visit <@links.ha id="multi-az-deploy-keycloak-kubernetes" />.
 
-[#multi-site-db-concepts]
+[#multi-az-db-concepts]
 == Concepts
 
 include::../partials/database-connections/configure-db-connection-pool-best-practices.adoc[]

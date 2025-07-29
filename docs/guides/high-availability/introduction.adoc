@@ -4,7 +4,7 @@
 
 <@tmpl.guide
 title="Keycloak High Availability Overview"
-summary="TODO" >
+summary="Understand the different ways high-availability can be achieved with Keycloak" >
 
 <@profile.ifCommunity>
 * <@links.ha id="multi-az-introduction" />

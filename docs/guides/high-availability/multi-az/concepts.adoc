@@ -1,0 +1,9 @@
+<#import "/templates/guide.adoc" as tmpl>
+<#import "/templates/links.adoc" as links>
+
+<@tmpl.guide
+title="Concepts for multi-az deployments"
+summary="Understand multi-az deployment with synchronous replication."
+tileVisible="false" >
+
+</@tmpl.guide>

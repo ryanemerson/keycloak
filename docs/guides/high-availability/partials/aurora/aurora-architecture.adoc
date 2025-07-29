@@ -1,4 +1,3 @@
-<#macro architecture parent>
 [#${parent}-aurora-architecture]
 == Architecture
 
@@ -13,5 +12,3 @@ See the https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_Aurora
 
 This documentation follows AWS best practices and creates a private Aurora database that is not exposed to the Internet.
 To access the database from a ROSA cluster, <<${parent}-establish-peering-connection-with-rosa-cluster,establish a peering connection between the database and the ROSA cluster>>.
-
-</#macro>

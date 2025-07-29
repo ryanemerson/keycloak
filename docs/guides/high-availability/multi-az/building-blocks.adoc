@@ -1,0 +1,53 @@
+<#import "/templates/guide.adoc" as tmpl>
+<#import "/templates/links.adoc" as links>
+
+<@tmpl.guide
+title="Building blocks multi-az deployments"
+summary="Learn about building blocks and suggested setups for multi-az deployments."
+tileVisible="false" >
+
+The following building blocks are needed to set up a multi-az deployment.
+
+The building blocks link to a blueprint with an example configuration.
+They are listed in the order in which they need to be installed.
+
+include::../partials/blueprint-disclaimer.adoc[]
+
+[#multi-az-blocks-prerequisites]
+== Prerequisites
+
+* Understanding the concepts laid out in the <@links.ha id="multi-az-concepts"/> {section}.
+
+
+[#multi-az-blocks-low-latency]
+== Two availability-zones with low-latency connection
+
+Ensures that synchronous replication is available for both the database and {project_name} clustering.
+
+*Suggested setup:* Two or more AWS Availability Zones within the same AWS Region.
+
+*Not considered:* Two regions on the same or different continents, as it would increase the latency and the likelihood of network failures.
+Synchronous replication of databases as services with Aurora Regional Deployments on AWS is only available within the same region.
+
+
+[#multi-az-blocks-environment]
+== Environment for {project_name}
+
+*Suggested setup:* Red Hat OpenShift Service on AWS (ROSA) deployed across multiple availability-zones with at least one worker pool in each zone.
+
+
+[#multi-az-blocks-database]
+== Database
+
+A synchronously replicated database available across all availability-zones.
+
+*Blueprint:* <@links.ha id="multi-az-deploy-aurora"/>.
+
+[#multi-az-blocks-keycloak]
+== {project_name}
+
+A clustered deployment of {project_name} with pods distributed across availability-zones.
+
+*Blueprint:* <@links.ha id="multi-az-deploy-keycloak" />.
+
+</@tmpl.guide>

@@ -1,8 +1,4 @@
-<#import "aurora-architecture.adoc" as aurora />
-
-<#macro single_site parent>
-
-<@aurora.architecture parent />
+<#include "aurora-architecture.adoc" />
 
 [#${parent}-aurora-procedure]
 == Procedure
@@ -26,4 +22,3 @@ include::../partials/aurora/aurora-create-peering-connections.adoc[]
 == Verifying the connection
 
 include::../partials/aurora/aurora-verify-peering-connections.adoc[]
-</#macro>
