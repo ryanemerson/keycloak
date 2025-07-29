@@ -1,7 +1,6 @@
 package org.keycloak.guides.maven;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,17 +16,16 @@ public class Context {
     private final Features features;
     private final List<Guide> guides;
 
-    public Context(File srcDir) throws IOException {
+    public Context(Path srcPath) throws IOException {
         this.options = new Options();
         this.features = new Features();
         this.guides = new LinkedList<>();
 
-        Path srcPath = srcDir.toPath();
         Path partials = srcPath.resolve("partials");
         Map<String, Integer> guidePriorities = loadPinnedGuides(srcPath);
 
         List<Path> guidePaths;
-        try (Stream<Path> files = Files.walk(srcDir.toPath())) {
+        try (Stream<Path> files = Files.walk(srcPath)) {
             guidePaths = files
                   .filter(Files::isRegularFile)
                   .filter(p -> !p.startsWith(partials))
@@ -35,7 +33,7 @@ public class Context {
                   .filter(p -> !p.getFileName().toString().equals("index.adoc"))
                   .toList();
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load guides from " + srcDir, e);
+            throw new RuntimeException("Failed to load guides from " + srcPath, e);
         }
 
         GuideParser parser = new GuideParser();

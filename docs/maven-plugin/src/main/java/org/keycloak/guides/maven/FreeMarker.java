@@ -1,31 +1,28 @@
 package org.keycloak.guides.maven;
 
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import freemarker.template.TemplateExceptionHandler;
-
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateExceptionHandler;
 
 public class FreeMarker {
 
     private final Map<String, Object> attributes;
     private final Configuration configuration;
 
-    public FreeMarker(File srcDir, Map<String, Object> attributes) throws IOException {
+    public FreeMarker(Path srcDir, Map<String, Object> attributes) throws IOException {
         this.attributes = attributes;
 
         configuration = new Configuration(Configuration.VERSION_2_3_31);
-        configuration.setDirectoryForTemplateLoading(srcDir);
+        configuration.setDirectoryForTemplateLoading(srcDir.toFile());
         configuration.setDefaultEncoding("UTF-8");
         configuration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
         configuration.setLogTemplateExceptions(false);
@@ -36,8 +33,7 @@ public class FreeMarker {
         Path out = target.resolve(template);
 
         Path parent = out.getParent();
-        if (Files.notExists(parent))
-            Files.createDirectory(parent);
+        Files.createDirectories(parent);
 
         HashMap<String, Object> attrs = new HashMap<>(attributes);
         attrs.put("id", id(template));
