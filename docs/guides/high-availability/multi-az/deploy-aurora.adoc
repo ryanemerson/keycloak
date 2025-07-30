@@ -29,4 +29,4 @@ Now that an Aurora database has been established and linked with all of your ROS
 
 == Next steps
 
-After successful deployment of the Aurora database continue with <@links.ha id="multi-az-deploy-infinispan-kubernetes" />
+After successful deployment of the Aurora database continue with <@links.ha id="multi-az-deploy-keycloak" />

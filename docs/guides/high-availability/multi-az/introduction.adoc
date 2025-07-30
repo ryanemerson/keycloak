@@ -6,19 +6,66 @@
 title="Multi-AZ Deployments"
 summary="Deploy Keycloak across multiple availability-zones in Kubernetes." >
 
+
 == When to use a multi-az setup
-TODO
+The multi-az deployment capabilities of {project_name} are targeted at use cases that:
+
+* Deploy a single Kubernetes cluster for all {project_name} deployments
+* Require the ability to withstand availability-zone failures
+* Fit within a defined user and request count.
+* Can accept the impact of periodic outages.
 
 <@profile.ifCommunity>
+[#multi-az-tested-configuration]
 == Tested Configuration
 
 We regularly test {project_name} with the following configuration:
 </@profile.ifCommunity>
 <@profile.ifProduct>
+[#multi-az-supported-configuration]
 == Supported Configuration
 </@profile.ifProduct>
 
-TODO
+* An Openshift cluster deployed across three availability-zones
+** Provisioned with https://www.redhat.com/en/technologies/cloud-computing/openshift/aws[Red Hat OpenShift Service on AWS] (ROSA),
+<@profile.ifProduct>
+either ROSA HCP or ROSA classic.
+</@profile.ifProduct>
+<@profile.ifCommunity>
+using ROSA HCP.
+</@profile.ifCommunity>
+
+** At least one worker node for each availability-zone
+** OpenShift version
+<@profile.ifProduct>
+4.17 (or later).
+</@profile.ifProduct>
+<@profile.ifCommunity>
+4.17.
+</@profile.ifCommunity>
+
+* Amazon Aurora PostgreSQL database
+** High availability with a primary DB instance in one Availability Zone, and a synchronously replicated reader in the second Availability Zone
+** Version ${properties["aurora-postgresql.version"]}
+
+<#include "/high-availability/partials/configuration-disclaimer.adoc" />
+
+Read more on each item in the <@links.ha id="multi-az-building-blocks" /> {section}.
+
+[#multi-az-load]
+<#include "/high-availability/partials/tested-load.adoc" />
+
+[#multi-az-limitations]
+== Limitations
+
+<@profile.ifCommunity>
+Even with the additional redundancy of three availability-zones, downtimes can still occur:
+</@profile.ifCommunity>
+
+* During upgrades of {project_name}
+** Enable <@links.server id="update-compatibility" anchor="rolling-updates-for-patch-releases" /> to minimize downtime
+
+For more details on limitations see the <@links.ha id="multi-az-concepts" /> {section}.
 
 == Next steps
 

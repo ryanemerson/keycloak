@@ -12,6 +12,7 @@ Those setups are intended for a transparent network on a single site.
 The {project_name} high-availability guide goes one step further to describe setups across multiple sites.
 While this setup adds additional complexity, that extra amount of high availability may be needed for some environments.
 
+
 == When to use a multi-site setup
 
 The multi-site deployment capabilities of {project_name} are targeted at use cases that:
@@ -28,11 +29,13 @@ AWS Region or an equivalent low-latency setup.
 * Can accept the impact of periodic outages.
 
 <@profile.ifCommunity>
+[#multi-site-tested-configuration]
 == Tested Configuration
 
 We regularly test {project_name} with the following configuration:
 </@profile.ifCommunity>
 <@profile.ifProduct>
+[#multi-site-supported-configuration]
 == Supported Configuration
 </@profile.ifProduct>
 
@@ -64,34 +67,16 @@ triggered by ROSA's Prometheus and Alert Manager
 </@profile.ifCommunity>
 to automate failover
 
-<@profile.ifProduct>
-Any deviation from the configuration above is not supported and any issue must be replicated in that environment for support.
-</@profile.ifProduct>
-<@profile.ifCommunity>
-While equivalent setups should work, you will need to verify the performance and failure behavior of your environment.
-We provide functional tests, failure tests and load tests in the https://github.com/keycloak/keycloak-benchmark[Keycloak Benchmark Project].
-</@profile.ifCommunity>
+<#include "/high-availability/partials/configuration-disclaimer.adoc" />
 
 Read more on each item in the <@links.ha id="multi-site-bblocks-multi-site" /> {section}.
 
-<@profile.ifProduct>
-== Maximum load
-</@profile.ifProduct>
-<@profile.ifCommunity>
-== Tested load
-
-We regularly test {project_name} with the following load:
-</@profile.ifCommunity>
-
-* 100,000 users
-* 300 requests per second
-
-<@profile.ifCommunity>
-While we did not see a hard limit in our tests with these values, we ask you to test for higher volumes with horizontally and vertically scaled {project_name} name instances and databases.
-</@profile.ifCommunity>
+[#multi-site-load]
+<#include "/high-availability/partials/tested-load.adoc" />
 
 See the <@links.ha id="multi-site-concepts-memory-and-cpu-sizing" /> {section} for more information.
 
+[#multi-site-limitations]
 == Limitations
 
 <@profile.ifCommunity>

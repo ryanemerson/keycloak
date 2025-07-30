@@ -6,4 +6,84 @@ title="Concepts for multi-az deployments"
 summary="Understand multi-az deployment with synchronous replication."
 tileVisible="false" >
 
+This topic describes a highly available multi-az setup and the behavior to expect.
+It outlines the requirements of the high availability architecture and describes the benefits and tradeoffs.
+
+[#multi-az-when-to-use]
+== When to use this setup
+
+Use this setup to provide {project_name} deployments that are able to tolerate availability-zone failures within a Kubernetes
+cluster, reducing the likelihood of downtime.
+
+== Deployment, data storage and caching
+
+A single {project_name} cluster is deployed, with pods scheduled across distinct availability-zones to allow zone failures
+to be tolerated with zero-downtime. Users, realms, clients, sessions, and other entities are stored in a database that
+is replicated synchronously across the two sites. The data is also cached in the {project_name} Infinispan caches as local caches.
+When data is changed in one {project_name} instance, that data is updated in the database and an invalidation message
+sent to other pods in the cluster using the `work` cache.
+
+<< TODO add diagram >>
+
+== Causes of data and service loss
+
+While this setup aims for high availability, the following situations can still lead to service or data loss:
+
+* Multiple availability-zone failures can result in a loss of entries from the `authenticationSessions`, `loginFailures`
+and `actionTokens` caches if the number of zone failures is greater than the cache's configured `num_owners`.
+
+* Deployments using `preferredDuringSchedulingIgnoredDuringExecution` anti-affinity rules instead of `requiredDuringSchedulingIgnoredDuringExecution`,
+may experience data-loss on availability-zone failure if multiple pods are scheduled on the failed zone.
+
+== Failures which this setup can survive
+
+[%autowidth]
+|===
+| Failure | Recovery | RPO^1^ | RTO^2^
+
+| Database node
+| If the writer instance fails, the database can promote a reader instance in the same or other site to be the new writer.
+| No data loss
+| Seconds to minutes (depending on the database)
+
+| {project_name} node
+| Multiple {project_name} instances run in a cluster. If one instance fails some incoming requests might receive an error message or are delayed for some seconds.
+| No data loss
+| Less than 30 seconds
+
+| Availability zone failure
+| If an availability-zone fails, all {project_name} pods host in that zone will also fail. Deploying at least the same number
+of {project_name} replicas as availability-zone should ensure that no data is lost and minimal downtime occurs as there will
+be other pods available to service requests.
+| No data loss
+| Seconds
+
+| Connectivity database
+| If the connectivity between availability-zones is lost, the synchronous replication will fail.
+Some requests might receive an error message or be delayed for a few seconds.
+Manual operations might be necessary depending on the database.
+| No data loss^3^
+| Seconds to minutes (depending on the database)
+
+| Connectivity {jdgserver_name}
+| If the connectivity between availability-zones is lost, data cannot be sent between {jdgserver_name} pods hosted in those zones.
+Incoming requests might receive an error message or be delayed for some seconds.
+The {jdgserver_name} will eventually remove the pods contained within the unreachable availability-zones from its local view and will stop sending data to them.
+While the availability-zones are unable to communicate, a split-brain will occur, potentially resulting in {project_name}
+pods from distinct zones having inconsistent cache data.
+| No data loss^3^
+| Seconds to minutes
+
+|===
+
+.Table footnotes:
+^1^ Recovery point objective, assuming all parts of the setup were healthy at the time this occurred. +
+^2^ Recovery time objective. +
+
+== Known limitations
+
+Split Brain::
+If two or more availability-zones are unable to communicate, this will result in a split-brain scenario where {project_name}
+pods have a different view of the cluster.
+
 </@tmpl.guide>
