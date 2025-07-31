@@ -14,7 +14,7 @@ public class Guide {
     private Path path;
 
     public static String toId(String path) {
-        return path.replaceAll("/", "-").replaceAll(".adoc", "");
+        return path.replace("/", "-").replace("\\", "-").replace(".adoc", "");
     }
 
     public String getTemplate() {
