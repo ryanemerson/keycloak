@@ -126,7 +126,7 @@ For faster response times during peak usage, consider a 4 vCPU `db.t4g.xlarge` i
 </#noparse>
 ////
 
-=== Sizing a multi-site setup
+=== Sizing a multi-cluster setup
 
 To create the sizing an active-active Keycloak setup with two AZs in one AWS region, following these steps:
 
@@ -160,7 +160,7 @@ The following setup was used to retrieve the settings above to run tests of abou
 * Database seeded with 20,000 users and 20,000 clients.
 * Infinispan local caches at default of 10,000 entries, so not all clients and users fit into the cache, and some requests will need to fetch the data from the database.
 * All authentication sessions in distributed caches as per default, with two owners per entries, allowing one failing Pod without losing data.
-* All user and client sessions are stored in the database and are not cached in-memory as this was tested in a multi-site setup.
+* All user and client sessions are stored in the database and are not cached in-memory as this was tested in a multi-cluster setup.
 Expect a slightly higher performance for single-site setups as a fixed number of user and client sessions will be cached.
 * OpenJDK 21
 

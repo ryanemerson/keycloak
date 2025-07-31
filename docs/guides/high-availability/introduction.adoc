@@ -3,8 +3,8 @@
 <#import "/templates/profile.adoc" as profile>
 
 <@tmpl.guide
-title="Keycloak High Availability Overview"
-summary="Understand the different ways high-availability can be achieved with Keycloak" >
+title="High availability overview"
+summary="Explore the different {project_name} high-availability architectures" >
 
 {project_name} supports different high-availability architectures, allowing system administrators to pick the deployment type most suitable
 for their needs. Ease of deployment, cost and fault-tolerance guarantees are important considerations when determining the correct architecture
@@ -14,25 +14,22 @@ for your deployments.
 
 The following Kubernetes based architectures are supported by {project_name}.
 
-=== Single Cluster
+=== Single cluster
 
-Deploy {project_name} in a single Kubernetes cluster, stretched across multiple availability-zones, using <@links.ha id="single-cluster-introduction" />.
+Deploy {project_name} in a single Kubernetes cluster, optionally "stretched" across multiple availability-zones, using <@links.ha id="single-cluster-introduction" />.
 
 Advantages::
-* Tolerate availability-zone failures
-* No external dependencies:
-* Less resources required:
-** Embedded Infinispan used for clustering
-** No need for external load-balancer
-** Single Kubernetes control-plane
+* No external dependencies
+* Single Kubernetes cluster to maintain
+* [Optional] Tolerate availability-zone failures
 
 Disadvantages::
 * Kubernetes cluster is a single point of failure:
 ** Control-plane failures could impact all {project_name} pods
 
-=== Multi-site
+=== Multi cluster
 
-Connect {project_name} deployments deployed in two different Kubernetes clusters to increase availability using <@links.ha id="multi-site-introduction" />.
+Connect {project_name} deployments deployed in two different Kubernetes clusters to increase availability using <@links.ha id="multi-cluster-introduction" />.
 
 Advantages::
 * Tolerate availability-zone failure
@@ -55,7 +52,7 @@ To learn more about the different high-availability architectures, please consul
 
 <@profile.ifCommunity>
 * <@links.ha id="single-cluster-introduction" />
-* <@links.ha id="multi-site-introduction" />
+* <@links.ha id="multi-cluster-introduction" />
 </@profile.ifCommunity>
 
 </@tmpl.guide>

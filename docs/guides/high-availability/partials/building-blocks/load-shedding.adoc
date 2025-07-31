@@ -15,4 +15,4 @@ All exceeding requests are served with an HTTP 503.
 
 You might consider limiting the value for `http-pool-max-threads` further because multiple concurrent threads will lead to throttling by Kubernetes once the requested CPU limit is reached.
 
-See the <@links.ha id="multi-site-concepts-threads" /> {section} about load shedding for details.
+See the <@links.ha id="multi-cluster-concepts-threads" /> {section} about load shedding for details.
