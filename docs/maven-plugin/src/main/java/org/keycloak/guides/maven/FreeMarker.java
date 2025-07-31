@@ -7,6 +7,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -29,7 +31,12 @@ public class FreeMarker {
     }
 
     public void template(Path template, Path target) throws IOException, TemplateException {
-        Template t = configuration.getTemplate(template.toString());
+        // We cannot use Path directly for the templateName as \ will be used on Windows
+        String templateName = StreamSupport.stream(template.spliterator(), false)
+              .map(p -> p.getFileName().toString())
+              .collect(Collectors.joining("/"));
+
+        Template t = configuration.getTemplate(templateName);
         Path out = target.resolve(template);
 
         Path parent = out.getParent();
