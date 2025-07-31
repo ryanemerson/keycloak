@@ -2,14 +2,14 @@
 <#import "/templates/links.adoc" as links>
 
 <@tmpl.guide
-title="Concepts for multi-az deployments"
-summary="Understand multi-az deployment with synchronous replication."
+title="Concepts for single-cluster deployments"
+summary="Understand single-cluster deployment with synchronous replication."
 tileVisible="false" >
 
-This topic describes a highly available multi-az setup and the behavior to expect.
+This topic describes a highly available single-cluster setup and the behavior to expect.
 It outlines the requirements of the high availability architecture and describes the benefits and tradeoffs.
 
-[#multi-az-when-to-use]
+[#single-cluster-when-to-use]
 == When to use this setup
 
 Use this setup to provide {project_name} deployments that are able to tolerate availability-zone failures within a Kubernetes

@@ -16,7 +16,7 @@ The following architectures are supported by {project_name}.
 
 === Multi-Az
 
-Deploy {project_name} in a single Kubernetes cluster, stretched across multiple availability-zones, using <@links.ha id="multi-az-introduction" />.
+Deploy {project_name} in a single Kubernetes cluster, stretched across multiple availability-zones, using <@links.ha id="single-cluster-introduction" />.
 
 Advantages::
 * Tolerate availability-zone failures
@@ -54,7 +54,7 @@ Disadvantages::
 To learn more about the different high-availability architectures, please consult the individual guides:
 
 <@profile.ifCommunity>
-* <@links.ha id="multi-az-introduction" />
+* <@links.ha id="single-cluster-introduction" />
 * <@links.ha id="multi-site-introduction" />
 </@profile.ifCommunity>
 

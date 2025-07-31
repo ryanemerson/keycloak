@@ -9,24 +9,24 @@ tileVisible="false" >
 This guide describes advanced {project_name} configurations for Kubernetes which are load tested and will recover availability-zone
 failures.
 
-These instructions are intended for use with the setup described in the <@links.ha id="multi-az-concepts"/> {section}.
-Use it together with the other building blocks outlined in the <@links.ha id="multi-az-building-blocks"/> {section}.
+These instructions are intended for use with the setup described in the <@links.ha id="single-cluster-concepts"/> {section}.
+Use it together with the other building blocks outlined in the <@links.ha id="single-cluster-building-blocks"/> {section}.
 
-[#multi-az-deploy-keycloak-prerequisites]
+[#single-cluster-deploy-keycloak-prerequisites]
 == Prerequisites
 
 * OpenShift or Kubernetes cluster deployed across multiple availability-zones with a worker-pool configured for each.
 * Understanding of a <@links.operator id="basic-deployment" /> of {project_name} with the {project_name} Operator.
-* Aurora AWS database deployed using the <@links.ha id="multi-az-deploy-aurora" /> {section}.
+* Aurora AWS database deployed using the <@links.ha id="single-cluster-deploy-aurora" /> {section}.
 
-[#multi-az-deploy-keycloak-procedure]
+[#single-cluster-deploy-keycloak-procedure]
 == Procedure
 
-. Determine the sizing of the deployment using the <@links.ha id="multi-az-concepts-memory-and-cpu-sizing" /> {section}.
+. Determine the sizing of the deployment using the <@links.ha id="single-cluster-concepts-memory-and-cpu-sizing" /> {section}.
 
 . Install the {project_name} Operator as described in the <@links.operator id="installation" /> {section}.
 
-. Notice the configuration file below contains options relevant for connecting to the Aurora database from <@links.ha id="multi-az-deploy-aurora" anchor="multi-az-aurora-connecting" />
+. Notice the configuration file below contains options relevant for connecting to the Aurora database from <@links.ha id="single-cluster-deploy-aurora" anchor="single-cluster-aurora-connecting" />
 
 . Build a custom {project_name} image which is link:{links_server_db_url}#preparing-keycloak-for-amazon-aurora-postgresql[prepared for usage with the Amazon Aurora PostgreSQL database].
 
@@ -81,7 +81,7 @@ spec:
 <1> The database connection pool initial, max and min size should be identical to allow statement caching for the database.
 Adjust this number to meet the needs of your system.
 As most requests will not touch the database due to the {project_name} embedded cache, this change can server several hundreds of requests per second.
-See the <@links.ha id="multi-az-concepts-database-connections" /> {section} for details.
+See the <@links.ha id="single-cluster-concepts-database-connections" /> {section} for details.
 <2> Specify the URL to your custom {project_name} image. If your image is optimized, set the `startOptimized` flag to `true`.
 <3> To be able to analyze the system under load, enable the metrics endpoint.
 

@@ -7,8 +7,8 @@ title="Multi-AZ Deployments"
 summary="Deploy Keycloak across multiple availability-zones in Kubernetes." >
 
 
-== When to use a multi-az setup
-The multi-az deployment capabilities of {project_name} are targeted at use cases that:
+== When to use a single-cluster setup
+The single-cluster deployment capabilities of {project_name} are targeted at use cases that:
 
 * Deploy a single Kubernetes cluster for all {project_name} deployments
 * Require the ability to withstand availability-zone failures
@@ -16,13 +16,13 @@ The multi-az deployment capabilities of {project_name} are targeted at use cases
 * Can accept the impact of periodic outages.
 
 <@profile.ifCommunity>
-[#multi-az-tested-configuration]
+[#single-cluster-tested-configuration]
 == Tested Configuration
 
 We regularly test {project_name} with the following configuration:
 </@profile.ifCommunity>
 <@profile.ifProduct>
-[#multi-az-supported-configuration]
+[#single-cluster-supported-configuration]
 == Supported Configuration
 </@profile.ifProduct>
 
@@ -50,12 +50,12 @@ using ROSA HCP.
 
 <#include "/high-availability/partials/configuration-disclaimer.adoc" />
 
-Read more on each item in the <@links.ha id="multi-az-building-blocks" /> {section}.
+Read more on each item in the <@links.ha id="single-cluster-building-blocks" /> {section}.
 
-[#multi-az-load]
+[#single-cluster-load]
 <#include "/high-availability/partials/tested-load.adoc" />
 
-[#multi-az-limitations]
+[#single-cluster-limitations]
 == Limitations
 
 <@profile.ifCommunity>
@@ -65,7 +65,7 @@ Even with the additional redundancy of three availability-zones, downtimes can s
 * During upgrades of {project_name}
 ** Enable <@links.server id="update-compatibility" anchor="rolling-updates-for-patch-releases" /> to minimize downtime
 
-For more details on limitations see the <@links.ha id="multi-az-concepts" /> {section}.
+For more details on limitations see the <@links.ha id="single-cluster-concepts" /> {section}.
 
 == Next steps
 
@@ -76,15 +76,15 @@ Additional performance tuning and security hardening are still recommended when 
 <@profile.ifCommunity>
 == Concept and building block overview
 
-* <@links.ha id="multi-az-concepts" />
-* <@links.ha id="multi-az-building-blocks" />
-* <@links.ha id="multi-az-concepts-database-connections" />
-* <@links.ha id="multi-az-concepts-threads" />
-* <@links.ha id="multi-az-concepts-memory-and-cpu-sizing" />
+* <@links.ha id="single-cluster-concepts" />
+* <@links.ha id="single-cluster-building-blocks" />
+* <@links.ha id="single-cluster-concepts-database-connections" />
+* <@links.ha id="single-cluster-concepts-threads" />
+* <@links.ha id="single-cluster-concepts-memory-and-cpu-sizing" />
 
 == Blueprints for building blocks
-* <@links.ha id="multi-az-deploy-aurora" />
-* <@links.ha id="multi-az-deploy-keycloak" />
+* <@links.ha id="single-cluster-deploy-aurora" />
+* <@links.ha id="single-cluster-deploy-keycloak" />
 </@profile.ifCommunity>
 
 </@tmpl.guide>
