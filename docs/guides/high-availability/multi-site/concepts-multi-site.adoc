@@ -10,7 +10,7 @@ This topic describes a highly available multi-site setup and the behavior to exp
 
 == When to use this setup
 
-Use this setup to provide {project_name} deployments that are able to tolerate site failures, reducing the likelihood of downtime.
+Use this setup to provide {project_name} deployments that are able to tolerate Kubernetes cluster failures, reducing the likelihood of downtime.
 
 == Deployment, data storage and caching
 

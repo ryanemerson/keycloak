@@ -30,8 +30,8 @@ Ensures that synchronous replication is available for both the database and {pro
 Synchronous replication of databases as services with Aurora Regional Deployments on AWS is only available within the same region.
 
 
-[#single-cluster-blocks-environment]
-== Environment for {project_name}
+[#single-cluster-blocks-kubernetes]
+== Kubernetes cluster
 
 *Suggested setup:* Red Hat OpenShift Service on AWS (ROSA) deployed across multiple availability-zones with at least one worker node in each zone.
 

@@ -3,17 +3,17 @@
 <#import "/templates/profile.adoc" as profile>
 
 <@tmpl.guide
-title="Multi-AZ Deployments"
-summary="Deploy Keycloak across multiple availability-zones in Kubernetes." >
+title="Single Cluster Deployments"
+summary="Deploy Keycloak in a Kubernetes cluster." >
 
 
 == When to use a single-cluster setup
-The single-cluster deployment capabilities of {project_name} are targeted at use cases that:
+The {project_name} single-cluster architecture is targeted at use cases that:
 
 * Deploy a single Kubernetes cluster for all {project_name} deployments
-* Require the ability to withstand availability-zone failures
 * Fit within a defined user and request count.
 * Can accept the impact of periodic outages.
+* [Optional] Need to withstand availability-zone failures
 
 <@profile.ifCommunity>
 [#single-cluster-tested-configuration]
@@ -59,18 +59,18 @@ Read more on each item in the <@links.ha id="single-cluster-building-blocks" /> 
 == Limitations
 
 <@profile.ifCommunity>
-Even with the additional redundancy of three availability-zones, downtimes can still occur:
+Even with the additional redundancy of three availability-zones, downtime can still occur when:
 </@profile.ifCommunity>
 
-* During upgrades of {project_name}
-** Enable <@links.server id="update-compatibility" anchor="rolling-updates-for-patch-releases" /> to minimize downtime
+* Simultaneous node failures occur
+* Rolling out {project_name} upgrades
 
 For more details on limitations see the <@links.ha id="single-cluster-concepts" /> {section}.
 
 == Next steps
 
 The different {sections} introduce the necessary concepts and building blocks.
-For each building block, a blueprint shows how to set a fully functional example.
+For each building block, a blueprint shows how to deploy a fully functional example.
 Additional performance tuning and security hardening are still recommended when preparing a production setup.
 
 <@profile.ifCommunity>

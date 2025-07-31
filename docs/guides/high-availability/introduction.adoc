@@ -7,14 +7,14 @@ title="Keycloak High Availability Overview"
 summary="Understand the different ways high-availability can be achieved with Keycloak" >
 
 {project_name} supports different high-availability architectures, allowing system administrators to pick the deployment type most suitable
-for their needs. In order to determine the correct architecture, the outlined availability and fault-tolerance guarantees
-of the different architectures should be carefully considered.
+for their needs. Ease of deployment, cost and fault-tolerance guarantees are important considerations when determining the correct architecture
+for your deployments.
 
 == Architectures
 
-The following architectures are supported by {project_name}.
+The following Kubernetes based architectures are supported by {project_name}.
 
-=== Multi-Az
+=== Single Cluster
 
 Deploy {project_name} in a single Kubernetes cluster, stretched across multiple availability-zones, using <@links.ha id="single-cluster-introduction" />.
 
@@ -32,7 +32,7 @@ Disadvantages::
 
 === Multi-site
 
-Connect multiple {project_name} deployments in different Kubernetes clusters to increase availability using <@links.ha id="multi-site-introduction" />.
+Connect {project_name} deployments deployed in two different Kubernetes clusters to increase availability using <@links.ha id="multi-site-introduction" />.
 
 Advantages::
 * Tolerate availability-zone failure
@@ -44,7 +44,7 @@ Disadvantages::
 ** External load-balancer required
 ** Separate Infinispan cluster required on each site
 * Cost:
-** Load-balancer required
+** Additional load-balancer required
 ** Additional compute is required for external Infinispan clusters
 ** Two Kubernetes control-planes must be provisioned
 * Not supported with three or more availability zones
