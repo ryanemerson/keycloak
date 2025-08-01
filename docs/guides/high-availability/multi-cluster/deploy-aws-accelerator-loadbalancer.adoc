@@ -8,8 +8,8 @@ tileVisible="false" >
 
 This topic describes the procedure required to deploy an AWS Global Accelerator to route traffic between multi-cluster {project_name} deployments.
 
-This deployment is intended to be used with the setup described in the <@links.ha id="multi-cluster-concepts-multi-cluster"/> {section}.
-Use this deployment with the other building blocks outlined in the <@links.ha id="multi-cluster-bblocks-multi-cluster"/> {section}.
+This deployment is intended to be used with the setup described in the <@links.ha id="multi-cluster-concepts-multi-site"/> {section}.
+Use this deployment with the other building blocks outlined in the <@links.ha id="multi-cluster-bblocks-multi-site"/> {section}.
 
 include::../partials/blueprint-disclaimer.adoc[]
 

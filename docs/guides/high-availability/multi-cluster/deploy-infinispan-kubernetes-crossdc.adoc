@@ -15,7 +15,7 @@ For simplicity, this topic uses the minimum configuration possible that allows {
 
 This {section} assumes two {ocp} clusters named `{site-a}` and `{site-b}`.
 
-This is a building block following the concepts described in the <@links.ha id="multi-cluster-concepts-multi-cluster" /> {section}.
+This is a building block following the concepts described in the <@links.ha id="multi-cluster-concepts-multi-site" /> {section}.
 See the <@links.ha id="multi-cluster-introduction" /> {section} for an overview.
 
 

@@ -69,7 +69,7 @@ to automate failover
 
 <#include "/high-availability/partials/configuration-disclaimer.adoc" />
 
-Read more on each item in the <@links.ha id="multi-cluster-bblocks-multi-cluster" /> {section}.
+Read more on each item in the <@links.ha id="multi-cluster-bblocks-multi-site" /> {section}.
 
 [#multi-cluster-load]
 <#include "/high-availability/partials/tested-load.adoc" />
@@ -88,7 +88,7 @@ Even with the additional redundancy of the two sites, downtimes can still occur:
 * After certain failure scenarios, manual intervention may be required to restore redundancy by bringing the failed site back online.
 * During certain switchover scenarios, there may be downtime of up to 5 minutes.
 
-For more details on limitations see the <@links.ha id="multi-cluster-concepts-multi-cluster" /> {section}.
+For more details on limitations see the <@links.ha id="multi-cluster-concepts-multi-site" /> {section}.
 
 == Next steps
 

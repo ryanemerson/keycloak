@@ -15,7 +15,7 @@ include::../partials/blueprint-disclaimer.adoc[]
 
 == Prerequisites
 
-* Understanding the concepts laid out in the <@links.ha id="multi-cluster-concepts-multi-cluster"/> {section}.
+* Understanding the concepts laid out in the <@links.ha id="multi-cluster-concepts-multi-site"/> {section}.
 
 == Two sites with low-latency connection
 
