@@ -45,7 +45,7 @@ using ROSA HCP.
 </@profile.ifCommunity>
 
 * Amazon Aurora PostgreSQL database
-** High availability with a primary DB instance in one Availability Zone, and a synchronously replicated reader in the second Availability Zone
+** High availability with a primary DB instance in one Availability Zone, and synchronously replicated readers in the other Availability Zones
 ** Version ${properties["aurora-postgresql.version"]}
 
 <#include "/high-availability/partials/configuration-disclaimer.adoc" />
