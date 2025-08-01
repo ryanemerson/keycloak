@@ -156,6 +156,6 @@ anti-affinity strategies.
 
 == Next steps
 
-Continue reading in the <@links.ha id="single-cluster-building blocks" /> {section} to find blueprints for the different building blocks.
+Continue reading in the <@links.ha id="single-cluster-building-blocks" /> {section} to find blueprints for the different building blocks.
 
 </@tmpl.guide>
