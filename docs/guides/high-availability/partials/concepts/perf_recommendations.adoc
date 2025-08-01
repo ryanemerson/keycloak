@@ -1,6 +1,6 @@
 [WARNING]
 ====
-* Performance will be lowered when scaling to more Pods (due to additional overhead) and using a cross-datacenter setup (due to additional traffic and operations).
+* Performance will be lowered when scaling to more Pods (due to additional overhead) and using a multi-cluster setup (due to additional traffic and operations).
 
 * Increased cache sizes can improve the performance when {project_name} instances running for a longer time.
 This will decrease response times and reduce IOPS on the database.
