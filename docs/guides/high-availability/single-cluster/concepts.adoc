@@ -142,7 +142,7 @@ The {jdgserver_name} will eventually remove the unreachable pods from its local 
 This can be overcome for patch releases by enabling <@links.server id="update-compatibility" anchor="rolling-updates-for-patch-releases" />.
 +
 . Multiple node failures can result in a loss of entries from the `authenticationSessions`, `loginFailures`
-and `actionTokens` caches if the number of node failures is greater than the cache's configured `num_owners`.
+and `actionTokens` caches if the number of node failures is greater than or equal to the cache's configured `num_owners`.
 +
 . Deployments using the default `preferredDuringSchedulingIgnoredDuringExecution` anti-affinity rules,
 may experience data-loss on node/availability-zone failure if multiple pods are scheduled on the failed node/zone.
