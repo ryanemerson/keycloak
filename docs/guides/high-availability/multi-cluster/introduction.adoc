@@ -39,7 +39,7 @@ We regularly test {project_name} with the following configuration:
 == Supported Configuration
 </@profile.ifProduct>
 
-* Two Openshift single-AZ clusters, in the same AWS Region
+* Two OpenShift single-AZ clusters, in the same AWS Region
 ** Provisioned with https://www.redhat.com/en/technologies/cloud-computing/openshift/aws[Red Hat OpenShift Service on AWS] (ROSA),
 <@profile.ifProduct>
 either ROSA HCP or ROSA classic.
@@ -48,7 +48,7 @@ either ROSA HCP or ROSA classic.
 using ROSA HCP.
 </@profile.ifCommunity>
 
-** Each Openshift cluster has all its workers in a single Availability Zone.
+** Each OpenShift cluster has all its workers in a single Availability Zone.
 ** OpenShift version
 <@profile.ifProduct>
 4.17 (or later).

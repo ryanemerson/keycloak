@@ -26,7 +26,7 @@ We regularly test {project_name} with the following configuration:
 == Supported Configuration
 </@profile.ifProduct>
 
-* An Openshift cluster deployed across three availability-zones
+* An OpenShift cluster deployed across three availability-zones
 ** Provisioned with https://www.redhat.com/en/technologies/cloud-computing/openshift/aws[Red Hat OpenShift Service on AWS] (ROSA),
 <@profile.ifProduct>
 either ROSA HCP or ROSA classic.
