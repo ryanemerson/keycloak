@@ -15,7 +15,7 @@ Use it together with the other building blocks outlined in the <@links.ha id="mu
 
 * OpenShift or Kubernetes cluster running.
 * Understanding of a <@links.operator id="basic-deployment" /> of {project_name} with the {project_name} Operator.
-* Aurora AWS database deployed using the <@links.ha id="multi-cluster-deploy-aurora-multi-az" /> {section}.
+* AWS Aurora database deployed using the <@links.ha id="multi-cluster-deploy-aurora-multi-az" /> {section}.
 * {jdgserver_name} server deployed using the <@links.ha id="multi-cluster-deploy-infinispan-kubernetes-crossdc" /> {section}.
 * Running {project_name} with OpenJDK 21, which is the default for the containers distributed for {project_name}, as this enabled virtual threads for the JGroups communication.
 

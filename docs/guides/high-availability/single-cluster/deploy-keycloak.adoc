@@ -17,7 +17,7 @@ Use it together with the other building blocks outlined in the <@links.ha id="si
 
 * OpenShift or Kubernetes cluster deployed across multiple availability-zones with a worker-pool configured for each.
 * Understanding of a <@links.operator id="basic-deployment" /> of {project_name} with the {project_name} Operator.
-* Aurora AWS database deployed using the <@links.ha id="single-cluster-deploy-aurora" /> {section}.
+* AWS Aurora database deployed using the <@links.ha id="single-cluster-deploy-aurora" /> {section}.
 
 [#single-cluster-deploy-keycloak-procedure]
 == Procedure

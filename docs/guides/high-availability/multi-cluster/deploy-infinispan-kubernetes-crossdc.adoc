@@ -314,6 +314,6 @@ In other environments, add the necessary certificates to {project_name}'s trusts
 
 == Next steps
 
-After the Aurora AWS database and {jdgserver_name} are deployed and running, use the procedure in the <@links.ha id="multi-cluster-deploy-keycloak-kubernetes" /> {section} to deploy {project_name} and connect it to all previously created building blocks.
+After the AWS Aurora database and {jdgserver_name} are deployed and running, use the procedure in the <@links.ha id="multi-cluster-deploy-keycloak-kubernetes" /> {section} to deploy {project_name} and connect it to all previously created building blocks.
 
 </@tmpl.guide>
