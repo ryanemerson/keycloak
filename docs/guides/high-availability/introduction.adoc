@@ -48,7 +48,7 @@ Disadvantages::
 
 === Next Steps
 
-To learn more about the different high-availability architectures, please consult the individual guides:
+To learn more about the different high-availability architectures, please consult the individual guides.
 
 <@profile.ifCommunity>
 * <@links.ha id="single-cluster-introduction" />
