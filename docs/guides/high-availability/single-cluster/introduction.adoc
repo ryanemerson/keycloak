@@ -4,16 +4,22 @@
 
 <@tmpl.guide
 title="Single cluster deployments"
-summary="Deploy Keycloak in a single Kubernetes cluster, optionally \"stretched\" across multiple availability-zones" >
-
+summary="Deploy a single Keycloak cluster, optionally stretched across multiple availability-zones" >
 
 == When to use a single cluster setup
 The {project_name} single cluster architecture is targeted at use cases that:
 
-* Deploy a single Kubernetes cluster for all {project_name} deployments
+* Deploy to an infrastructure with transparent networking, like for example a single Kubernetes cluster.
+* Are constrained to a single
+<@profile.ifProduct>
+AWS Region.
+</@profile.ifProduct>
+<@profile.ifCommunity>
+AWS Region or an equivalent low-latency setup.
+</@profile.ifCommunity>
+* Permit planned outages for maintenance.
 * Fit within a defined user and request count.
 * Can accept the impact of periodic outages.
-* [Optional] Need to withstand availability-zone failures
 
 <@profile.ifCommunity>
 [#single-cluster-tested-configuration]
@@ -64,6 +70,7 @@ Even with the additional redundancy of three availability-zones, downtime can st
 
 * Simultaneous node failures occur
 * Rolling out {project_name} upgrades
+* Downtime of the underlying infrastructure, like the OpenShift cluster
 
 For more details on limitations see the <@links.ha id="single-cluster-concepts" /> {section}.
 

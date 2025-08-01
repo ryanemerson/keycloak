@@ -12,16 +12,16 @@ for your deployments.
 
 == Architectures
 
-The following Kubernetes based architectures are supported by {project_name}.
+The following architectures are supported by {project_name}.
 
 === Single cluster
 
-Deploy {project_name} in a single Kubernetes cluster, optionally "stretched" across multiple availability-zones, using <@links.ha id="single-cluster-introduction" />.
+Deploy {project_name} in a single cluster, optionally "stretched" across multiple availability-zones, using <@links.ha id="single-cluster-introduction" />.
 
 Advantages::
 * No external dependencies
-* Single Kubernetes cluster to maintain
-* [Optional] Tolerate availability-zone failures
+* Deployment in a single Kubernetes cluster or a set of virtual machines with transparent networking
+* Tolerate availability-zone failures if deployed to multiple availability zones
 
 Disadvantages::
 * Kubernetes cluster is a single point of failure:
@@ -29,11 +29,12 @@ Disadvantages::
 
 === Multi cluster
 
-Connect {project_name} deployments deployed in two different Kubernetes clusters to increase availability using <@links.ha id="multi-cluster-introduction" />.
+Connect two {project_name} clusters deployed for example in different Kubernetes clusters in two availability zones to increase availability using <@links.ha id="multi-cluster-introduction" />.
 
 Advantages::
 * Tolerate availability-zone failure
 * Tolerate Kubernetes cluster failure
+* Bridge two networks that do not offer transparent networking
 * Regulatory compliance when distinct deployments are required
 
 Disadvantages::
