@@ -39,10 +39,10 @@ Advantages::
 Disadvantages::
 * Complexity:
 ** External load-balancer required
-** Separate Infinispan cluster required on each site
+** Separate {jdgserver_name} cluster required on each site
 * Cost:
 ** Additional load-balancer required
-** Additional compute is required for external Infinispan clusters
+** Additional compute is required for external {jdgserver_name} clusters
 ** Two Kubernetes control-planes must be provisioned
 * Not supported with three or more availability zones
 
