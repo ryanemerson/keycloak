@@ -5,16 +5,12 @@ import static org.keycloak.operator.crds.v2alpha1.CRDUtils.METRICS_ENABLED;
 import static org.keycloak.operator.crds.v2alpha1.CRDUtils.configuredOptions;
 import static org.keycloak.operator.crds.v2alpha1.CRDUtils.isTlsConfigured;
 
-import java.util.List;
-
 import org.keycloak.operator.Constants;
 import org.keycloak.operator.Utils;
 import org.keycloak.operator.crds.v2alpha1.deployment.Keycloak;
 import org.keycloak.operator.crds.v2alpha1.deployment.spec.ServiceMonitorSpec;
 
-import io.fabric8.kubernetes.api.model.LabelSelector;
 import io.fabric8.kubernetes.api.model.networking.v1.Ingress;
-import io.fabric8.openshift.api.model.monitoring.v1.NamespaceSelector;
 import io.fabric8.openshift.api.model.monitoring.v1.ServiceMonitor;
 import io.fabric8.openshift.api.model.monitoring.v1.ServiceMonitorBuilder;
 import io.javaoperatorsdk.operator.api.config.informer.Informer;
@@ -23,9 +19,7 @@ import io.javaoperatorsdk.operator.api.reconciler.dependent.DependentResource;
 import io.javaoperatorsdk.operator.processing.dependent.kubernetes.CRUDKubernetesDependentResource;
 import io.javaoperatorsdk.operator.processing.dependent.kubernetes.KubernetesDependent;
 import io.javaoperatorsdk.operator.processing.dependent.workflow.Condition;
-import io.quarkiverse.operatorsdk.annotations.CSVMetadata;
 
-@CSVMetadata.Optional
 @KubernetesDependent(
       informer = @Informer(labelSelector = Constants.DEFAULT_LABELS_AS_STRING)
 )
