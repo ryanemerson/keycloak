@@ -23,7 +23,9 @@ import io.javaoperatorsdk.operator.api.reconciler.dependent.DependentResource;
 import io.javaoperatorsdk.operator.processing.dependent.kubernetes.CRUDKubernetesDependentResource;
 import io.javaoperatorsdk.operator.processing.dependent.kubernetes.KubernetesDependent;
 import io.javaoperatorsdk.operator.processing.dependent.workflow.Condition;
+import io.quarkiverse.operatorsdk.annotations.CSVMetadata;
 
+@CSVMetadata.Optional
 @KubernetesDependent(
       informer = @Informer(labelSelector = Constants.DEFAULT_LABELS_AS_STRING)
 )
