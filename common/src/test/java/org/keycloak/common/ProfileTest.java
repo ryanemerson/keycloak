@@ -82,6 +82,16 @@ public class ProfileTest {
     }
 
     @Test
+    public void checkDependencyAutomaticallyEnabled() {
+        Properties properties = new Properties();
+        properties.setProperty(PropertiesProfileConfigResolver.getPropertyKey(Profile.Feature.SPIFFE), "enabled");
+        Profile.configure(new PropertiesProfileConfigResolver(properties));
+
+        Assert.assertTrue(Profile.isFeatureEnabled(Profile.Feature.SPIFFE));
+        Assert.assertTrue(Profile.isFeatureEnabled(Profile.Feature.CLIENT_AUTH_FEDERATED));
+    }
+
+    @Test
     public void checkFailureIfDependencyDisabled() {
         Properties properties = new Properties();
         properties.setProperty("keycloak.profile.feature.account_api", "disabled");

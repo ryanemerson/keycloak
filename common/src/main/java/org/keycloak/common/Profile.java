@@ -98,9 +98,9 @@ public class Profile {
 
         CLIENT_AUTH_FEDERATED("Authenticates client based on assertions issued by identity provider", Type.PREVIEW),
 
-        SPIFFE("SPIFFE trust relationship provider", Type.PREVIEW),
+        SPIFFE("SPIFFE trust relationship provider", Type.PREVIEW, CLIENT_AUTH_FEDERATED),
 
-        KUBERNETES_SERVICE_ACCOUNTS("Kubernetes service accounts trust relationship provider", Type.PREVIEW),
+        KUBERNETES_SERVICE_ACCOUNTS("Kubernetes service accounts trust relationship provider", Type.PREVIEW, CLIENT_AUTH_FEDERATED),
 
         // Check if kerberos is available in underlying JVM and auto-detect if feature should be enabled or disabled by default based on that
         KERBEROS("Kerberos", Type.DEFAULT, 1, () -> KerberosJdkProvider.getProvider().isKerberosAvailable()),
@@ -372,12 +372,13 @@ public class Profile {
                     break;
                 }
             }
+
             for (Feature f : entry.getValue()) {
                 features.put(f, f == enabledFeature);
             }
         }
 
-        verifyConfig(features);
+        enableDependentFeatures(features, resolvers);
 
         return init(profile, features);
     }
@@ -528,13 +529,22 @@ public class Profile {
         PREVIEW
     }
 
-    private static void verifyConfig(Map<Feature, Boolean> features) {
+    private static void enableDependentFeatures(Map<Feature, Boolean> features, ProfileConfigResolver... resolvers) {
         for (Map.Entry<Feature, Boolean> entry : features.entrySet()) {
             Feature f = entry.getKey();
             if (entry.getValue() && f.getDependencies() != null) {
                 for (Feature d : f.getDependencies()) {
+                    // If a dependent Feature is not enabled, automatically enable it unless a user has explicitly disabled it
                     if (!features.get(d)) {
-                        throw new ProfileException("Feature " + f.getKey() + " depends on disabled feature " + d.getKey());
+                        ProfileConfigResolver.FeatureConfig configuration = getFeatureConfig(d.getUnversionedKey(), resolvers);
+                        switch (configuration) {
+                            case ENABLED:
+                                throw new IllegalStateException("Feature " + f.getKey() + " should already have been enabled");
+                            case DISABLED:
+                                throw new ProfileException("Feature " + f.getKey() + " depends on disabled feature " + d.getKey());
+                            case UNCONFIGURED:
+                                features.put(d, true);
+                        }
                     }
                 }
             }

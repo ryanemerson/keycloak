@@ -77,14 +77,4 @@ public class OpenApiDistTest {
   void testOpenApiUiFailsWhenOpenApiIsNotEnabled(CLIResult cliResult) {
     cliResult.assertError("Disabled option: '--openapi-ui-enabled'. Available only when OpenAPI Endpoint is enabled");
   }
-
-  @DryRun
-  @Test
-  void testOpenApiRequiresFeatures(KeycloakDistribution dist) {
-    CLIResult cliResult = dist.run("start-dev", "--openapi-enabled=true", "--features=openapi");
-    cliResult.assertError("ERROR: Feature openapi depends on disabled feature client-admin-api-v2");
-
-    cliResult = dist.run("start-dev", "--openapi-enabled=true", "--features=client-admin-api:v2");
-    cliResult.assertError("Disabled option: '--openapi-enabled'. Available only when OpenAPI feature is enabled");
-  }
 }
