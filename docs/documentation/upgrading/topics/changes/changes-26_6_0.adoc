@@ -19,6 +19,12 @@ The `BROKER_LINK` table now contains two additional indexes `IDX_BROKER_LINK_USE
 If the table contains more than 300000 entries, {project_name} will skip the index creation by default during the automatic schema migration and instead log the SQL statement on the console during migration to be applied manually after {project_name}'s startup.
 See the link:{upgradingguide_link}[{upgradingguide_name}] for details on how to configure a different limit.
 
+=== HTTP client metrics
+
+The HTTP client used by {project_name} now exposes metrics which allow request latency and connection pool status to be monitored.
+These metrics are enabled by default when {project_name} is configured with `--metrics-enabled=true`, but can be disabled
+by configuring `--spi-connections-http-client-default-metrics-enabled=false`.
+
 // ------------------------ Deprecated features ------------------------ //
 == Deprecated features
 
