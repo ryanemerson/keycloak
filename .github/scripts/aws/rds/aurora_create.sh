@@ -104,7 +104,7 @@ aws ec2 authorize-security-group-ingress \
 # Create the Aurora DB cluster and instance
 aws rds create-db-cluster \
     --db-cluster-identifier ${AURORA_CLUSTER} \
-    --database-name keycloak \
+    --database-name ${AURORA_DATABASE} \
     --engine ${AURORA_ENGINE} \
     --engine-version ${AURORA_ENGINE_VERSION} \
     --master-username ${AURORA_USERNAME} \

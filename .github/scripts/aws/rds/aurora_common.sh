@@ -17,6 +17,8 @@ function requiredEnv() {
 requiredEnv AURORA_CLUSTER AURORA_REGION
 
 SCRIPT_DIR=${SCRIPT_DIR:-$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )}
+export AURORA_CREDENTIAL_SECRET="${AURORA_CLUSTER}-credentials"
+export AURORA_DATABASE=${AURORA_DATABASE:-"keycloak"}
 export AURORA_ENGINE=${AURORA_ENGINE:-"aurora-postgresql"}
 export AURORA_ENGINE_VERSION=${AURORA_ENGINE_VERSION:-"$(${SCRIPT_DIR}/../../../../mvnw help:evaluate -f ${SCRIPT_DIR}/../../../../pom.xml -Dexpression=aurora-postgresql.version -q -DforceStdout)"}
 export AURORA_INSTANCES=${AURORA_INSTANCES:-"2"}
