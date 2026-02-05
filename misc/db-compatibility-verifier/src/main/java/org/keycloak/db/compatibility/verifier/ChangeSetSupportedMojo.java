@@ -24,6 +24,8 @@ public class ChangeSetSupportedMojo extends AbstractChangeSetMojo {
         try {
             if (addAll) {
                 addAll(classLoader(), sFile, uFile);
+            } else if (migration != null && !migration.isEmpty()) {
+                // TODO add migration
             } else {
                 checkValidChangeSetId(id, author, filename);
                 ChangeSet changeSet = new ChangeSet(id, author, filename);

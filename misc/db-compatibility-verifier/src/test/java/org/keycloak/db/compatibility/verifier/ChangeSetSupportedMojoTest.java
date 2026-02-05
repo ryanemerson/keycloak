@@ -1,5 +1,6 @@
 package org.keycloak.db.compatibility.verifier;
 
+import java.nio.file.Files;
 import java.util.List;
 
 import com.fasterxml.jackson.core.type.TypeReference;

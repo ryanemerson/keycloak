@@ -1,6 +1,6 @@
 package org.keycloak.db.compatibility.verifier;
 
-import java.util.List;
+import java.util.Collection;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,16 +15,18 @@ public class CreateSnapshotMojoTest extends AbstractMojoTest {
     void testSnapshotFilesCreated() throws Exception {
         var classLoader = CreateSnapshotMojoTest.class.getClassLoader();
         var mojo = new CreateSnapshotMojo();
-        mojo.createSnapshot(classLoader, supportedFile, unsupportedFile);
+        mojo.createSnapshot(classLoader, supportedFile, unsupportedFile, "org.keycloak.db.compatibility.verifier.test");
 
         assertTrue(supportedFile.exists());
         assertTrue(unsupportedFile.exists());
 
         var mapper = new ObjectMapper();
-        List<ChangeSet> supportedChanges = mapper.readValue(supportedFile, new TypeReference<>() {});
-        assertEquals(2, supportedChanges.size());
+        JsonParent json = mapper.readValue(supportedFile, new TypeReference<>() {});;
+        assertEquals(2, json.changeSets().size());
+        assertEquals(1, json.migrations().size());
 
-        List<ChangeSet> unsupportedChanges = mapper.readValue(unsupportedFile, new TypeReference<>() {});
-        assertEquals(0, unsupportedChanges.size());
+        json = mapper.readValue(unsupportedFile, new TypeReference<>() {});;
+        assertEquals(0, json.changeSets().size());
+        assertEquals(0, json.migrations().size());
     }
 }

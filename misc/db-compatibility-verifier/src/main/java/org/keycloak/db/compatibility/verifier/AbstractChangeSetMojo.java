@@ -22,6 +22,9 @@ abstract class AbstractChangeSetMojo extends AbstractMojo {
     @Parameter(property = "db.verify.changeset.filename")
     String filename;
 
+    @Parameter(property = "db.verify.migration.file")
+    String migration;
+
 
     void checkFileExist(String ref, File file) throws MojoExecutionException {
         if (!file.exists()) {
