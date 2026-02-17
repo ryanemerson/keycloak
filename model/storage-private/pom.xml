@@ -14,6 +14,7 @@
     <properties>
         <db.verify.supportedFile>src/main/resources/META-INF/rolling-upgrades-supported-changes.json</db.verify.supportedFile>
         <db.verify.unsupportedFile>src/main/resources/META-INF/rolling-upgrades-unsupported-changes.json</db.verify.unsupportedFile>
+        <db.verify.migration.package>org.keycloak.migration.migrators</db.verify.migration.package>
     </properties>
 
     <dependencies>
@@ -97,13 +98,10 @@
                         <executions>
                             <execution>
                                 <id>snapshot</id>
-                                <phase>process-resources</phase>
+                                <phase>compile</phase>
                                 <goals>
                                     <goal>snapshot</goal>
                                 </goals>
-                                <configuration>
-                                    <migrationsPackage>org.keycloak.migration.migrators</migrationsPackage>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
