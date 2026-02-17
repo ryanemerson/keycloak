@@ -9,7 +9,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 @Mojo(name = "snapshot")
-public class CreateSnapshotMojo extends AbstractMojo {
+public class SnapshotMojo extends AbstractMojo {
 
     @Parameter(property = "db.verify.migration.package")
     String migrationsPackage;

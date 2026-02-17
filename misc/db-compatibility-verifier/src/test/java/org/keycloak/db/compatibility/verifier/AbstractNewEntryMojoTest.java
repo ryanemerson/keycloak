@@ -148,7 +148,7 @@ abstract class AbstractNewEntryMojoTest extends AbstractMojoTest {
         assertEquals(migration.clazz(), sMigration.clazz());
 
         // Test subsequent Migration is added to already populated target file
-        migration = new Migration(VerifyCompatibilityMojoTest.class.getName());
+        migration = new Migration(VerifyMojoTest.class.getName());
         mojo.addMigration(classLoader, migration, getTargetFile(), getAlternateFile());
 
         parent = mapper.readValue(getTargetFile(), new TypeReference<>() {});

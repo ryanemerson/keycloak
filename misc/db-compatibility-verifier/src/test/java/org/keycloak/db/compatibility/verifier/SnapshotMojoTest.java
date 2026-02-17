@@ -8,12 +8,12 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CreateSnapshotMojoTest extends AbstractMojoTest {
+public class SnapshotMojoTest extends AbstractMojoTest {
 
     @Test
     void testSnapshotFilesCreated() throws Exception {
-        var classLoader = CreateSnapshotMojoTest.class.getClassLoader();
-        var mojo = new CreateSnapshotMojo();
+        var classLoader = SnapshotMojoTest.class.getClassLoader();
+        var mojo = new SnapshotMojo();
         mojo.createSnapshot(classLoader, supportedFile, unsupportedFile, "org.keycloak.db.compatibility.verifier.test");
 
         assertTrue(supportedFile.exists());

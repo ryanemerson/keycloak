@@ -13,10 +13,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class VerifyCompatibilityMojoTest {
+public class VerifyMojoTest {
 
-    final ClassLoader classLoader = VerifyCompatibilityMojoTest.class.getClassLoader();
-    final VerifyCompatibilityMojo mojo = new VerifyCompatibilityMojo();
+    final ClassLoader classLoader = VerifyMojoTest.class.getClassLoader();
+    final VerifyMojo mojo = new VerifyMojo();
 
     @Test
     void testFilesDoNotExist() {
@@ -71,7 +71,6 @@ public class VerifyCompatibilityMojoTest {
 
     @Test
     void testMigrationIncludedInSupportedAndUnsupportedFiles() {
-        var mojo = new VerifyCompatibilityMojo();
         var migration = new Migration("example.Migration");
 
         Exception e = assertThrows(
@@ -83,7 +82,6 @@ public class VerifyCompatibilityMojoTest {
 
     @Test
     void testAllMigrationsRecorded() {
-        var mojo = new VerifyCompatibilityMojo();
         var migrations = Set.of(
               new Migration("example.Migration1"),
               new Migration("example.Migration2")
@@ -94,7 +92,6 @@ public class VerifyCompatibilityMojoTest {
 
     @Test
     void testMissingMigration() {
-        var mojo = new VerifyCompatibilityMojo();
         var currentChanges = new HashSet<Migration>();
         currentChanges.add(new Migration("example.Migration1"));
         currentChanges.add(new Migration("example.Migration2"));

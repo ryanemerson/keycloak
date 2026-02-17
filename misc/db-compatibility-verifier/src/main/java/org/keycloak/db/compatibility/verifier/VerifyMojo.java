@@ -14,7 +14,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 @Mojo(name = "verify")
-public class VerifyCompatibilityMojo extends AbstractMojo {
+public class VerifyMojo extends AbstractMojo {
 
     @Parameter(property = "db.verify.migration.package")
     String migrationsPackage;
