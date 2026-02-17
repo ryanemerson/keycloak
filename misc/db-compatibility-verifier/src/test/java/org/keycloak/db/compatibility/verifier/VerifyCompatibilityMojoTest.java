@@ -16,50 +16,46 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class VerifyCompatibilityMojoTest {
 
     final ClassLoader classLoader = VerifyCompatibilityMojoTest.class.getClassLoader();
+    final VerifyCompatibilityMojo mojo = new VerifyCompatibilityMojo();
 
     @Test
-    void testChangeSetFilesDoNotExist() {
-        var mojo = new VerifyCompatibilityMojo();
+    void testFilesDoNotExist() {
         File noneExistingFile = new File("noneExistingFile");
         assertFalse(noneExistingFile.exists());
 
-        assertDoesNotThrow(() -> mojo.verifyCompatibility(classLoader, noneExistingFile, noneExistingFile));
+        assertDoesNotThrow(() -> mojo.verify(classLoader, noneExistingFile, noneExistingFile));
     }
 
     @Test
-    void testEmptyChangeSetFiles() {
-        var mojo = new VerifyCompatibilityMojo();
-        File emptyJson = new File(classLoader.getResource("META-INF/empty-array.json").getFile());
+    void testEmptySnapshotFiles() {
+        File emptyJson = new File(classLoader.getResource("META-INF/empty-snapshot.json").getFile());
 
-        assertDoesNotThrow(() -> mojo.verifyCompatibility(classLoader, emptyJson, emptyJson));
+        assertDoesNotThrow(() -> mojo.verifyChangeSets(classLoader, emptyJson, emptyJson));
     }
 
     @Test
     void testChangeSetIncludedInSupportedAndUnsupportedFiles() {
-        var mojo = new VerifyCompatibilityMojo();
         var changeSet = new ChangeSet("1", "keycloak", "example.xml");
 
         Exception e = assertThrows(
               MojoExecutionException.class,
-              () -> mojo.checkIntersection(List.of(changeSet), List.of(changeSet))
+              () -> mojo.verifyIntersection("ChangeSet", List.of(changeSet), List.of(changeSet))
         );
         assertEquals("One or more ChangeSet definitions exist in both the supported and unsupported file", e.getMessage());
     }
 
     @Test
     void testAllChangeSetsRecorded() {
-        var mojo = new VerifyCompatibilityMojo();
         var changeSets = Set.of(
               new ChangeSet("1", "keycloak", "example.xml"),
               new ChangeSet("2", "keycloak", "example.xml")
         );
 
-        assertDoesNotThrow(() -> mojo.checkMissingChangeSet(changeSets, new HashSet<>(changeSets), new File(""), new File("")));
+        assertDoesNotThrow(() -> mojo.verifyMissing("ChangeSet", changeSets, new HashSet<>(changeSets), new File(""), new File("")));
     }
 
     @Test
     void testMissingChangeSet() {
-        var mojo = new VerifyCompatibilityMojo();
         var currentChanges = new HashSet<ChangeSet>();
         currentChanges.add(new ChangeSet("1", "keycloak", "example.xml"));
         currentChanges.add(new ChangeSet("2", "keycloak", "example.xml"));
@@ -68,8 +64,47 @@ public class VerifyCompatibilityMojoTest {
 
         Exception e = assertThrows(
               MojoExecutionException.class,
-              () -> mojo.checkMissingChangeSet(currentChanges, recordedChanges, new File(""), new File(""))
+              () -> mojo.verifyMissing("ChangeSet", currentChanges, recordedChanges, new File(""), new File(""))
         );
         assertEquals("One or more ChangeSet definitions are missing from the supported or unsupported files", e.getMessage());
+    }
+
+    @Test
+    void testMigrationIncludedInSupportedAndUnsupportedFiles() {
+        var mojo = new VerifyCompatibilityMojo();
+        var migration = new Migration("example.Migration");
+
+        Exception e = assertThrows(
+              MojoExecutionException.class,
+              () -> mojo.verifyIntersection("Migration", List.of(migration), List.of(migration))
+        );
+        assertEquals("One or more Migration definitions exist in both the supported and unsupported file", e.getMessage());
+    }
+
+    @Test
+    void testAllMigrationsRecorded() {
+        var mojo = new VerifyCompatibilityMojo();
+        var migrations = Set.of(
+              new Migration("example.Migration1"),
+              new Migration("example.Migration2")
+        );
+
+        assertDoesNotThrow(() -> mojo.verifyMissing("Migration", migrations, new HashSet<>(migrations), new File(""), new File("")));
+    }
+
+    @Test
+    void testMissingMigration() {
+        var mojo = new VerifyCompatibilityMojo();
+        var currentChanges = new HashSet<Migration>();
+        currentChanges.add(new Migration("example.Migration1"));
+        currentChanges.add(new Migration("example.Migration2"));
+
+        var recordedChanges = Set.of(currentChanges.iterator().next());
+
+        Exception e = assertThrows(
+              MojoExecutionException.class,
+              () -> mojo.verifyMissing("Migration", currentChanges, recordedChanges, new File(""), new File(""))
+        );
+        assertEquals("One or more Migration definitions are missing from the supported or unsupported files", e.getMessage());
     }
 }
