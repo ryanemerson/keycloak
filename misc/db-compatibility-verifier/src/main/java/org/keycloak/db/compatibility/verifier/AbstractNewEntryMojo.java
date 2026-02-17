@@ -63,11 +63,13 @@ abstract class AbstractNewEntryMojo extends AbstractMojo {
         Set<ChangeSet> knownChangeSets = xmlParser.discoverAllChangeSets();
 
         // Load changes to exclude and remove them from the known changesets
-        Set<ChangeSet> excludedChanges = objectMapper.readValue(exclusions, new TypeReference<>() {});
+        JsonParent excludedParent = objectMapper.readValue(exclusions, new TypeReference<>() {});
+        Collection<ChangeSet> excludedChanges = excludedParent.changeSets();
         knownChangeSets.removeAll(excludedChanges);
 
-        // Overwrite all content in the destination file
-        objectMapper.writeValue(dest, knownChangeSets);
+        // Overwrite all ChangeSet content in the destination file
+        JsonParent parent = objectMapper.readValue(dest, new TypeReference<>() {});
+        objectMapper.writeValue(dest, new JsonParent(knownChangeSets, parent.migrations()));
     }
 
     void addChangeSet(ClassLoader classLoader, ChangeSet changeSet, File dest, File alternate) throws IOException, MojoExecutionException {
