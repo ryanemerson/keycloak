@@ -1,6 +1,5 @@
 package org.keycloak.db.compatibility.verifier;
 
-import java.util.Collection;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
