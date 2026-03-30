@@ -203,9 +203,13 @@ public final class HttpPropertyMappers implements PropertyMapperGrouping {
     @Override
     public void validateConfig(Picocli picocli) {
         if (picocli.getParsedCommand().filter(AbstractCommand::isServing).isPresent()) {
-            boolean enabled = isHttpEnabled(getOptionalKcValue(HttpOptions.HTTP_ENABLED.getKey()).orElse(null));
-            if (!enabled && !isHttpsEnabled()) {
+            boolean httpEnabled = isHttpEnabled(getOptionalKcValue(HttpOptions.HTTP_ENABLED.getKey()).orElse(null));
+            boolean httpsEnabled = isHttpsEnabled();
+            if (!httpEnabled && !httpsEnabled) {
                 throw new PropertyException(Messages.httpsConfigurationNotSet());
+            }
+            if (Profile.isFeatureEnabled(Profile.Feature.AUTHZEN) && !httpsEnabled && !Environment.isDevMode()) {
+                throw new PropertyException("The AuthZen endpoint requires HTTPS in order to be compliant with the OpenID AuthZen specification.");
             }
         }
     }

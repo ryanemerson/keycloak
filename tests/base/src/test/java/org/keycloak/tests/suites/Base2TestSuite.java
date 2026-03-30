@@ -6,6 +6,7 @@ import org.junit.platform.suite.api.Suite;
 @Suite
 @SelectPackages({
         "org.keycloak.tests.authz",
+        "org.keycloak.tests.authzen",
         "org.keycloak.tests.broker",
         "org.keycloak.tests.client",
         "org.keycloak.tests.common",
