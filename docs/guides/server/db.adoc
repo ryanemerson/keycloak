@@ -335,6 +335,8 @@ Secure the connection by adding the options:
 * `db-tls-mode=verify-server`: Forces TLS and verifies the server's identity against the trusted certificate.
 * `db-tls-trust-store-file=/path/to/certificate`: The path to the server's public certificate file on the client machine.
 
+NOTE: When using mTLS with PostgreSQL, the private key alias in the PKCS#12 keystore specified by `db-mtls-key-store-file` must be `user`. This is required because the PostgreSQL JDBC driver's `PKCS12KeyManager` has this alias hardcoded.
+
 [[preparing-keycloak-for-amazon-aurora-postgresql]]
 == Preparing for Amazon Aurora PostgreSQL
 
@@ -485,6 +487,28 @@ The following example demonstrates how to configure database TLS using these opt
 Alternatively, you can use `--truststore-paths` instead of the `db-tls-trust-store-*` options to add your certificate to the Java truststore.
 
 <@kc.start parameters="--db=postgres --db-tls-mode=verify-server --truststore-paths=/path/to/certificate.pem"/>
+
+=== Enabling mutual TLS (mTLS)
+
+For environments that require mutual TLS authentication, {project_name} supports configuring a client keystore in addition to the truststore.
+With mTLS, both the server and the client authenticate each other using certificates.
+
+The following additional options are available for mTLS:
+
+`db-mtls-key-store-file`::
+The path to the keystore file containing the client certificate and private key used for mTLS authentication with the database server.
+
+`db-mtls-key-store-password`::
+The password to access the keystore file specified in `db-mtls-key-store-file`.
+
+`db-mtls-key-store-type`::
+The type of the keystore file.
+Common values include `JKS` (Java KeyStore) and `PKCS12`.
+If not specified, the driver's default keystore type is used.
+
+The following example demonstrates how to configure database mTLS using these options for a PostgreSQL database.
+
+<@kc.start parameters="--db=postgres --db-tls-mode=verify-server --db-tls-trust-store-file=/path/to/truststore.p12 --db-mtls-key-store-file=/path/to/keystore.p12 --db-mtls-key-store-password=changeit --db-mtls-key-store-type=PKCS12"/>
 
 == Setting JPA provider configuration option for migrationStrategy
 

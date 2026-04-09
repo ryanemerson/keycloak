@@ -31,15 +31,28 @@ import io.smallrye.config.ConfigValue;
 import org.jboss.logging.Logger;
 
 import static org.keycloak.config.DatabaseOptions.DB;
+import static org.keycloak.config.DatabaseOptions.DB_MTLS_KEY_STORE_FILE;
+import static org.keycloak.config.DatabaseOptions.DB_MTLS_KEY_STORE_PASSWORD;
+import static org.keycloak.config.DatabaseOptions.DB_MTLS_KEY_STORE_TYPE;
 import static org.keycloak.config.DatabaseOptions.DB_ORACLE_TLS_TRANSPORT;
 import static org.keycloak.config.DatabaseOptions.DB_POOL_INITIAL_SIZE;
 import static org.keycloak.config.DatabaseOptions.DB_POOL_MAX_SIZE;
+import static org.keycloak.config.DatabaseOptions.DB_PROPERTY_CLIENT_CERTIFICATE_KEY_STORE_PASSWORD;
+import static org.keycloak.config.DatabaseOptions.DB_PROPERTY_CLIENT_CERTIFICATE_KEY_STORE_TYPE;
+import static org.keycloak.config.DatabaseOptions.DB_PROPERTY_CLIENT_CERTIFICATE_KEY_STORE_URL;
 import static org.keycloak.config.DatabaseOptions.DB_PROPERTY_ENCRYPT;
+import static org.keycloak.config.DatabaseOptions.DB_PROPERTY_KEY_STORE;
+import static org.keycloak.config.DatabaseOptions.DB_PROPERTY_KEY_STORE_PASSWORD;
+import static org.keycloak.config.DatabaseOptions.DB_PROPERTY_ORACLE_KEY_STORE;
+import static org.keycloak.config.DatabaseOptions.DB_PROPERTY_ORACLE_KEY_STORE_PASSWORD;
+import static org.keycloak.config.DatabaseOptions.DB_PROPERTY_ORACLE_KEY_STORE_TYPE;
 import static org.keycloak.config.DatabaseOptions.DB_PROPERTY_ORACLE_TRUST_STORE;
 import static org.keycloak.config.DatabaseOptions.DB_PROPERTY_ORACLE_TRUST_STORE_PASSWORD;
 import static org.keycloak.config.DatabaseOptions.DB_PROPERTY_ORACLE_TRUST_STORE_TYPE;
 import static org.keycloak.config.DatabaseOptions.DB_PROPERTY_SERVER_SSL_CERT;
 import static org.keycloak.config.DatabaseOptions.DB_PROPERTY_SSLFACTORY;
+import static org.keycloak.config.DatabaseOptions.DB_PROPERTY_SSLKEY;
+import static org.keycloak.config.DatabaseOptions.DB_PROPERTY_SSLPASSWORD;
 import static org.keycloak.config.DatabaseOptions.DB_PROPERTY_SSLROOTCERT;
 import static org.keycloak.config.DatabaseOptions.DB_PROPERTY_SSL_SERVER_DN_MATCH;
 import static org.keycloak.config.DatabaseOptions.DB_PROPERTY_TRUST_CERTIFICATE_KEY_STORE_PASSWORD;
@@ -253,7 +266,37 @@ public final class DatabasePropertyMappers implements PropertyMapperGrouping {
                         .transformer(DatabasePropertyMappers::computePostgresSSLFactory)
                         .to("quarkus.datasource.jdbc.additional-jdbc-properties.sslfactory")
                         .build(),
-                setInputTlsJdbcProperty(DB_PROPERTY_SSLROOTCERT, DB_TLS_TRUST_STORE_FILE, "sslrootcert", EnumSet.of(Database.Vendor.POSTGRES))
+                setInputTlsJdbcProperty(DB_PROPERTY_SSLROOTCERT, DB_TLS_TRUST_STORE_FILE, "sslrootcert", EnumSet.of(Database.Vendor.POSTGRES)),
+
+                // Database mTLS configuration
+                fromOption(DB_MTLS_KEY_STORE_FILE)
+                        .paramLabel("path")
+                        .build(),
+                fromOption(DB_MTLS_KEY_STORE_TYPE)
+                        .paramLabel("type")
+                        .build(),
+                fromOption(DB_MTLS_KEY_STORE_PASSWORD)
+                        .paramLabel("password")
+                        .isMasked(true)
+                        .build(),
+
+                // Oracle mTLS
+                setInputTlsJdbcProperty(DB_PROPERTY_ORACLE_KEY_STORE, DB_MTLS_KEY_STORE_FILE, "javax.net.ssl.keyStore", EnumSet.of(Database.Vendor.ORACLE)),
+                setInputTlsJdbcProperty(DB_PROPERTY_ORACLE_KEY_STORE_PASSWORD, DB_MTLS_KEY_STORE_PASSWORD, "javax.net.ssl.keyStorePassword", EnumSet.of(Database.Vendor.ORACLE)),
+                setInputTlsJdbcProperty(DB_PROPERTY_ORACLE_KEY_STORE_TYPE, DB_MTLS_KEY_STORE_TYPE, "javax.net.ssl.keyStoreType", EnumSet.of(Database.Vendor.ORACLE)),
+
+                // MSSQL and MariaDB mTLS (both use keyStore/keyStorePassword properties)
+                setInputTlsJdbcProperty(DB_PROPERTY_KEY_STORE, DB_MTLS_KEY_STORE_FILE, "keyStore", EnumSet.of(Database.Vendor.MSSQL, Database.Vendor.MARIADB)),
+                setInputTlsJdbcProperty(DB_PROPERTY_KEY_STORE_PASSWORD, DB_MTLS_KEY_STORE_PASSWORD, "keyStorePassword", EnumSet.of(Database.Vendor.MSSQL, Database.Vendor.MARIADB)),
+
+                // Mysql/TiDB mTLS
+                setInputTlsJdbcProperty(DB_PROPERTY_CLIENT_CERTIFICATE_KEY_STORE_URL, DB_MTLS_KEY_STORE_FILE, "clientCertificateKeyStoreUrl", EnumSet.of(Database.Vendor.MYSQL, Database.Vendor.TIDB)),
+                setInputTlsJdbcProperty(DB_PROPERTY_CLIENT_CERTIFICATE_KEY_STORE_PASSWORD, DB_MTLS_KEY_STORE_PASSWORD, "clientCertificateKeyStorePassword", EnumSet.of(Database.Vendor.MYSQL, Database.Vendor.TIDB)),
+                setInputTlsJdbcProperty(DB_PROPERTY_CLIENT_CERTIFICATE_KEY_STORE_TYPE, DB_MTLS_KEY_STORE_TYPE, "clientCertificateKeyStoreType", EnumSet.of(Database.Vendor.MYSQL, Database.Vendor.TIDB)),
+
+                // PostgreSQL mTLS (pgjdbc supports PKCS#12 via sslkey with .p12/.pfx extension since 42.2.9)
+                setInputTlsJdbcProperty(DB_PROPERTY_SSLKEY, DB_MTLS_KEY_STORE_FILE, "sslkey", EnumSet.of(Database.Vendor.POSTGRES)),
+                setInputTlsJdbcProperty(DB_PROPERTY_SSLPASSWORD, DB_MTLS_KEY_STORE_PASSWORD, "sslpassword", EnumSet.of(Database.Vendor.POSTGRES))
         );
 
         return appendDatasourceMappers(mappers, Map.of(

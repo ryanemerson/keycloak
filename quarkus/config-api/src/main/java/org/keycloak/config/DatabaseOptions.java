@@ -203,6 +203,54 @@ public class DatabaseOptions {
     public static final Option<String> DB_PROPERTY_ORACLE_TRUST_STORE_TYPE = new OptionBuilder<>("db-property-javax.net.ssl.trustStoreType", String.class)
             .hidden()
             .build();
+
+    // mTLS keystore options
+    public static final Option<File> DB_MTLS_KEY_STORE_FILE = new OptionBuilder<>("db-mtls-key-store-file", File.class)
+            .category(OptionCategory.DATABASE)
+            .description("The path to the keystore file containing the client certificate and private key used for mTLS authentication with the database server.")
+            .build();
+
+    public static final Option<String> DB_MTLS_KEY_STORE_PASSWORD = new OptionBuilder<>("db-mtls-key-store-password", String.class)
+            .category(OptionCategory.DATABASE)
+            .description("The password to access the keystore file specified in db-mtls-key-store-file.")
+            .build();
+
+    public static final Option<String> DB_MTLS_KEY_STORE_TYPE = new OptionBuilder<>("db-mtls-key-store-type", String.class)
+            .category(OptionCategory.DATABASE)
+            .description("The type of the keystore file. Common values include 'JKS' (Java KeyStore) and 'PKCS12'. If not specified, it uses the driver's default.")
+            .build();
+
+    // mTLS hidden options, per vendor, to configure mTLS in the driver
+    public static final Option<String> DB_PROPERTY_CLIENT_CERTIFICATE_KEY_STORE_URL = new OptionBuilder<>("db-property-clientCertificateKeyStoreUrl", String.class)
+            .hidden()
+            .build();
+    public static final Option<String> DB_PROPERTY_CLIENT_CERTIFICATE_KEY_STORE_PASSWORD = new OptionBuilder<>("db-property-clientCertificateKeyStorePassword", String.class)
+            .hidden()
+            .build();
+    public static final Option<String> DB_PROPERTY_CLIENT_CERTIFICATE_KEY_STORE_TYPE = new OptionBuilder<>("db-property-clientCertificateKeyStoreType", String.class)
+            .hidden()
+            .build();
+    public static final Option<String> DB_PROPERTY_KEY_STORE = new OptionBuilder<>("db-property-keyStore", String.class)
+            .hidden()
+            .build();
+    public static final Option<String> DB_PROPERTY_KEY_STORE_PASSWORD = new OptionBuilder<>("db-property-keyStorePassword", String.class)
+            .hidden()
+            .build();
+    public static final Option<String> DB_PROPERTY_ORACLE_KEY_STORE = new OptionBuilder<>("db-property-javax.net.ssl.keyStore", String.class)
+            .hidden()
+            .build();
+    public static final Option<String> DB_PROPERTY_ORACLE_KEY_STORE_PASSWORD = new OptionBuilder<>("db-property-javax.net.ssl.keyStorePassword", String.class)
+            .hidden()
+            .build();
+    public static final Option<String> DB_PROPERTY_ORACLE_KEY_STORE_TYPE = new OptionBuilder<>("db-property-javax.net.ssl.keyStoreType", String.class)
+            .hidden()
+            .build();
+    public static final Option<String> DB_PROPERTY_SSLKEY = new OptionBuilder<>("db-property-sslkey", String.class)
+            .hidden()
+            .build();
+    public static final Option<String> DB_PROPERTY_SSLPASSWORD = new OptionBuilder<>("db-property-sslpassword", String.class)
+            .hidden()
+            .build();
     public static final Option<String> DB_MSSQL_SEND_STRING_PARAMETER_AS_UNICODE = new OptionBuilder<>("db-mssql-send-string-parameter-as-unicode", String.class)
             .category(OptionCategory.DATABASE)
             .defaultValue("false")
@@ -273,7 +321,20 @@ public class DatabaseOptions {
                 DB_PROPERTY_TRUST_CERTIFICATE_KEY_STORE_PASSWORD,
                 DB_PROPERTY_TRUST_STORE_PASSWORD,
                 DB_PROPERTY_ORACLE_TRUST_STORE_PASSWORD,
-                DB_PROPERTY_ORACLE_TRUST_STORE_TYPE
+                DB_PROPERTY_ORACLE_TRUST_STORE_TYPE,
+                DB_MTLS_KEY_STORE_FILE,
+                DB_MTLS_KEY_STORE_PASSWORD,
+                DB_MTLS_KEY_STORE_TYPE,
+                DB_PROPERTY_CLIENT_CERTIFICATE_KEY_STORE_URL,
+                DB_PROPERTY_CLIENT_CERTIFICATE_KEY_STORE_PASSWORD,
+                DB_PROPERTY_CLIENT_CERTIFICATE_KEY_STORE_TYPE,
+                DB_PROPERTY_KEY_STORE,
+                DB_PROPERTY_KEY_STORE_PASSWORD,
+                DB_PROPERTY_ORACLE_KEY_STORE,
+                DB_PROPERTY_ORACLE_KEY_STORE_PASSWORD,
+                DB_PROPERTY_ORACLE_KEY_STORE_TYPE,
+                DB_PROPERTY_SSLKEY,
+                DB_PROPERTY_SSLPASSWORD
         );
 
         /**

@@ -666,6 +666,78 @@ public class DatasourcesConfigurationTest extends AbstractConfigurationTest {
     }
 
     @Test
+    public void testPostgresMTLSOptions() {
+        doDatabaseMtlsOptionTest("postgres",
+                "sslkey",
+                "sslpassword",
+                null);
+    }
+
+    @Test
+    public void testMysqlMTLSOptions() {
+        doDatabaseMtlsOptionTest("mysql",
+                "clientCertificateKeyStoreUrl",
+                "clientCertificateKeyStorePassword",
+                "clientCertificateKeyStoreType");
+    }
+
+    @Test
+    public void testMssqlMTLSOptions() {
+        doDatabaseMtlsOptionTest("mssql",
+                "keyStore",
+                "keyStorePassword",
+                null);
+    }
+
+    @Test
+    public void testMariadbMTLSOptions() {
+        doDatabaseMtlsOptionTest("mariadb",
+                "keyStore",
+                "keyStorePassword",
+                null);
+    }
+
+    @Test
+    public void testOracleMTLSOptions() {
+        doDatabaseMtlsOptionTest("oracle",
+                "javax.net.ssl.keyStore",
+                "javax.net.ssl.keyStorePassword",
+                "javax.net.ssl.keyStoreType");
+    }
+
+    private static void doDatabaseMtlsOptionTest(String dbKind,
+                                                  String keyStoreFileProperty,
+                                                  String keyStorePasswordProperty,
+                                                  String keyStoreTypeProperty) {
+        var h2Url = "jdbc:h2:mem:keycloakdb;NON_KEYWORDS=VALUE;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=0";
+
+        // when TLS is disabled, mTLS properties should not be set on the named datasource
+        var config = createConfigFromCliArguments("--db=dev-mem", "--db-kind-users=" + dbKind, "--db-url-host-users=myhost", "--db-tls-mode-users=disabled",
+                "--db-mtls-key-store-file-users=keystore.p12", "--db-mtls-key-store-password-users=secret", "--db-mtls-key-store-type-users=PKCS12");
+
+        assertNullAdditionalJdbcProperty(config, null, keyStoreFileProperty);
+        assertNullAdditionalJdbcProperty(config, "users", keyStoreFileProperty);
+        assertNullAdditionalJdbcProperty(config, "users", keyStorePasswordProperty);
+        assertNullAdditionalJdbcProperty(config, "users", keyStoreTypeProperty);
+
+        // when TLS is enabled and mTLS options are set on the named datasource
+        config = createConfigFromCliArguments("--db=dev-mem", "--db-kind-users=" + dbKind, "--db-url-host-users=myhost", "--db-tls-mode-users=verify-server",
+                "--db-mtls-key-store-file-users=keystore.p12", "--db-mtls-key-store-password-users=secret", "--db-mtls-key-store-type-users=PKCS12");
+
+        assertEquals(h2Url, config.getConfigValue("quarkus.datasource.jdbc.url").getValue());
+
+        // main datasource should not have mTLS properties
+        assertNullAdditionalJdbcProperty(config, null, keyStoreFileProperty);
+        assertNullAdditionalJdbcProperty(config, null, keyStorePasswordProperty);
+        assertNullAdditionalJdbcProperty(config, null, keyStoreTypeProperty);
+
+        // named datasource should have mTLS properties
+        assertAdditionalJdbcProperty(config, "users", keyStoreFileProperty, "keystore.p12");
+        assertAdditionalJdbcProperty(config, "users", keyStorePasswordProperty, "secret");
+        assertAdditionalJdbcProperty(config, "users", keyStoreTypeProperty, "PKCS12");
+    }
+
+    @Test
     public void testRawDatabasePassword() {
         putEnvVar("KCRAW_DB_PASSWORD", "p@ss$$w0rd${special}");
         ConfigArgsConfigSource.setCliArgs("--db=postgres");

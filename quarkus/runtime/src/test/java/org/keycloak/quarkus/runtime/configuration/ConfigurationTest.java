@@ -853,6 +853,74 @@ public class ConfigurationTest extends AbstractConfigurationTest {
         assertAdditionalJdbcProperty(config, null, trustStoreTypeProperty, "pem");
     }
 
+    @Test
+    public void testPostgresMTLSOptions() {
+        doDatabaseMtlsOptionTest("postgres",
+                "sslkey",
+                "sslpassword",
+                null);
+    }
+
+    @Test
+    public void testMysqlMTLSOptions() {
+        doDatabaseMtlsOptionTest("mysql",
+                "clientCertificateKeyStoreUrl",
+                "clientCertificateKeyStorePassword",
+                "clientCertificateKeyStoreType");
+    }
+
+    @Test
+    public void testMssqlMTLSOptions() {
+        doDatabaseMtlsOptionTest("mssql",
+                "keyStore",
+                "keyStorePassword",
+                null);
+    }
+
+    @Test
+    public void testMariadbMTLSOptions() {
+        doDatabaseMtlsOptionTest("mariadb",
+                "keyStore",
+                "keyStorePassword",
+                null);
+    }
+
+    @Test
+    public void testOracleMTLSOptions() {
+        doDatabaseMtlsOptionTest("oracle",
+                "javax.net.ssl.keyStore",
+                "javax.net.ssl.keyStorePassword",
+                "javax.net.ssl.keyStoreType");
+    }
+
+    private static void doDatabaseMtlsOptionTest(String dbKind,
+                                                  String keyStoreFileProperty,
+                                                  String keyStorePasswordProperty,
+                                                  String keyStoreTypeProperty) {
+        // when TLS is disabled, mTLS properties should not be set
+        var config = createConfigFromCliArguments("--db=" + dbKind, "--db-url-host=myhost", "--db-tls-mode=disabled",
+                "--db-mtls-key-store-file=keystore.p12", "--db-mtls-key-store-password=secret", "--db-mtls-key-store-type=PKCS12");
+
+        assertNullAdditionalJdbcProperty(config, null, keyStoreFileProperty);
+        assertNullAdditionalJdbcProperty(config, null, keyStorePasswordProperty);
+        assertNullAdditionalJdbcProperty(config, null, keyStoreTypeProperty);
+
+        // when TLS is enabled and mTLS options are not set, keystore properties should be null
+        config = createConfigFromCliArguments("--db=" + dbKind, "--db-url-host=myhost", "--db-tls-mode=verify-server");
+
+        assertNullAdditionalJdbcProperty(config, null, keyStoreFileProperty);
+        assertNullAdditionalJdbcProperty(config, null, keyStorePasswordProperty);
+        assertNullAdditionalJdbcProperty(config, null, keyStoreTypeProperty);
+
+        // when TLS is enabled and mTLS options are set, keystore properties should be set
+        config = createConfigFromCliArguments("--db=" + dbKind, "--db-url-host=myhost", "--db-tls-mode=verify-server",
+                "--db-mtls-key-store-file=keystore.p12", "--db-mtls-key-store-password=secret", "--db-mtls-key-store-type=PKCS12");
+
+        assertAdditionalJdbcProperty(config, null, keyStoreFileProperty, "keystore.p12");
+        assertAdditionalJdbcProperty(config, null, keyStorePasswordProperty, "secret");
+        assertAdditionalJdbcProperty(config, null, keyStoreTypeProperty, "PKCS12");
+    }
+
     private static Config.Scope cacheEmbeddedConfiguration() {
         return initConfig(CacheEmbeddedConfigProviderSpi.SPI_NAME, DefaultCacheEmbeddedConfigProviderFactory.PROVIDER_ID);
     }
