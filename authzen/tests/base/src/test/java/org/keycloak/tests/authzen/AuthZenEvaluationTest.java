@@ -58,6 +58,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.keycloak.authorization.authzen.AuthZen.SubjectType.CLIENT;
 import static org.keycloak.authorization.authzen.AuthZen.SubjectType.USER;
+import static org.keycloak.authorization.authzen.AuthZen.SubjectType.USER_ID;
 import static org.keycloak.authorization.authzen.AuthZenWellKnownProvider.accessEvaluationEndpoint;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -456,6 +457,44 @@ public class AuthZenEvaluationTest {
         EvaluationResult result = authzenClient("admin-user", "password")
               .evaluate(AuthZenClient.evaluationRequest()
                     .subject(USER, "nonexistent-user")
+                    .action("read")
+                    .resource("endpoint", "/admin")
+                    .build());
+
+        assertEquals(200, result.statusCode());
+        assertFalse(result.decision());
+    }
+
+    @Test
+    public void testUserIdSubjectTypeResolvesById() throws IOException {
+        String userId = realm.admin().users().search(ADMIN_USER).get(0).getId();
+
+        EvaluationResult byId = authzenClient(ADMIN_USER, "password")
+              .evaluate(AuthZenClient.evaluationRequest()
+                    .subject(USER_ID, userId)
+                    .action("read")
+                    .resource("endpoint", "/admin")
+                    .build());
+
+        EvaluationResult byUsername = authzenClient(ADMIN_USER, "password")
+              .evaluate(AuthZenClient.evaluationRequest()
+                    .subject(USER, ADMIN_USER)
+                    .action("read")
+                    .resource("endpoint", "/admin")
+                    .build());
+
+        assertEquals(200, byId.statusCode());
+        assertTrue(byId.decision());
+
+        assertEquals(200, byUsername.statusCode());
+        assertTrue(byUsername.decision());
+    }
+
+    @Test
+    public void testUserIdSubjectTypeWithInvalidIdReturnsDenied() throws IOException {
+        EvaluationResult result = authzenClient(ADMIN_USER, "password")
+              .evaluate(AuthZenClient.evaluationRequest()
+                    .subject(USER_ID, "00000000-0000-0000-0000-000000000000")
                     .action("read")
                     .resource("endpoint", "/admin")
                     .build());

@@ -34,7 +34,8 @@ public final class AuthZen {
 
     public enum SubjectType {
         CLIENT("client"),
-        USER("user");
+        USER("user"),
+        USER_ID("user.id");
 
         private final String value;
 

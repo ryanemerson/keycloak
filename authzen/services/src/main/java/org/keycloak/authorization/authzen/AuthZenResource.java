@@ -146,6 +146,10 @@ public class AuthZenResource {
                 UserModel user = session.users().getUserByUsername(realm, subject.id());
                 yield user != null ? new UserModelIdentity(realm, user) : null;
             }
+            case USER_ID -> {
+                UserModel user = session.users().getUserById(realm, subject.id());
+                yield user != null ? new UserModelIdentity(realm, user) : null;
+            }
             case CLIENT -> {
                 ClientModel subjectClient = realm.getClientByClientId(subject.id());
                 yield subjectClient != null ? new ClientModelIdentity(session, subjectClient) : null;
