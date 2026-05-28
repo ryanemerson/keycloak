@@ -52,4 +52,15 @@ public interface Decision<D extends Evaluation> {
     default boolean isEvaluated(String scope) {
         return false;
     }
+
+    /**
+     * Returns {@code true} when the decision has been resolved and further
+     * permission evaluations can be skipped. Used with {@link org.keycloak.representations.idm.authorization.EvaluationSemantic}
+     * to support short-circuit evaluation across multiple permissions.
+     *
+     * @return {@code true} if evaluation should stop
+     */
+    default boolean isResolved() {
+        return false;
+    }
 }

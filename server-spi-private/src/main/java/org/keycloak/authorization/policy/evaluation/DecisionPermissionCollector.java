@@ -35,6 +35,7 @@ import org.keycloak.authorization.permission.ResourcePermission;
 import org.keycloak.authorization.store.ResourceStore;
 import org.keycloak.representations.idm.authorization.AuthorizationRequest;
 import org.keycloak.representations.idm.authorization.DecisionStrategy;
+import org.keycloak.representations.idm.authorization.EvaluationSemantic;
 import org.keycloak.representations.idm.authorization.Permission;
 
 /**
@@ -46,11 +47,18 @@ public class DecisionPermissionCollector extends AbstractDecisionCollector {
     private final ResourceServer resourceServer;
     private final AuthorizationRequest request;
     private final Set<Permission> permissions = new LinkedHashSet<>();
+    private final EvaluationSemantic evaluationSemantic;
+    private boolean denied;
 
     public DecisionPermissionCollector(AuthorizationProvider authorizationProvider, ResourceServer resourceServer, AuthorizationRequest request) {
         this.authorizationProvider = authorizationProvider;
         this.resourceServer = resourceServer;
         this.request = request;
+        if (request != null && request.getMetadata() != null && request.getMetadata().getEvaluationSemantic() != null) {
+            this.evaluationSemantic = request.getMetadata().getEvaluationSemantic();
+        } else {
+            this.evaluationSemantic = EvaluationSemantic.EXECUTE_ALL;
+        }
     }
 
     @Override
@@ -61,6 +69,7 @@ public class DecisionPermissionCollector extends AbstractDecisionCollector {
 
         if (Effect.PERMIT.equals(result.getEffect())) {
             if (permission.getScopes().isEmpty() && !resource.getScopes().isEmpty()) {
+                denied = true;
                 return;
             }
             grantPermission(authorizationProvider, permissions, permission, requestedScopes, resourceServer, request, result);
@@ -136,6 +145,7 @@ public class DecisionPermissionCollector extends AbstractDecisionCollector {
 
             if (userManagedPermissions.isEmpty()) {
                 if (!resourceGranted && (grantedScopes.isEmpty() && !requestedScopes.isEmpty())) {
+                    denied = true;
                     return;
                 }
             } else {
@@ -150,6 +160,7 @@ public class DecisionPermissionCollector extends AbstractDecisionCollector {
                 }
 
                 if (grantedScopes.isEmpty() && !resource.getScopes().isEmpty()) {
+                    denied = true;
                     return;
                 }
 
@@ -157,6 +168,7 @@ public class DecisionPermissionCollector extends AbstractDecisionCollector {
             }
 
             if (anyDeny && grantedScopes.isEmpty()) {
+                denied = true;
                 return;
             }
 
@@ -185,6 +197,17 @@ public class DecisionPermissionCollector extends AbstractDecisionCollector {
 
     public Collection<Permission> results() {
         return permissions;
+    }
+
+    @Override
+    public boolean isResolved() {
+        if (evaluationSemantic == EvaluationSemantic.PERMIT_ON_FIRST_PERMIT) {
+            return !permissions.isEmpty();
+        }
+        if (evaluationSemantic == EvaluationSemantic.DENY_ON_FIRST_DENY) {
+            return denied;
+        }
+        return false;
     }
 
     @Override

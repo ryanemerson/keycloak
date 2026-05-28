@@ -60,6 +60,8 @@ import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.ProtocolMapperRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.keycloak.representations.idm.authorization.AuthorizationRequest;
+import org.keycloak.representations.idm.authorization.EvaluationSemantic;
 import org.keycloak.representations.idm.authorization.JSPolicyRepresentation;
 import org.keycloak.representations.idm.authorization.Permission;
 import org.keycloak.representations.idm.authorization.PolicyEvaluationRequest;
@@ -751,5 +753,158 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
         PolicyEvaluationResponse result = authorizationApi.policies().evaluate(request);
         assertNotNull(result.getResults());
         assertFalse(result.getResults().isEmpty());
+    }
+
+    @Test
+    public void testEvaluationSemanticPermitOnFirstPermit() {
+        testingClient.server().run(PolicyEvaluationTest::testEvaluationSemanticPermitOnFirstPermit);
+    }
+
+    public static void testEvaluationSemanticPermitOnFirstPermit(KeycloakSession session) {
+        session.getContext().setRealm(session.realms().getRealmByName("authz-test"));
+        AuthorizationProvider authorization = session.getProvider(AuthorizationProvider.class);
+        ClientModel clientModel = session.clients().getClientByClientId(session.getContext().getRealm(), "resource-server-test");
+        StoreFactory storeFactory = authorization.getStoreFactory();
+        ResourceServer resourceServer = storeFactory.getResourceServerStore().findByClient(clientModel);
+
+        Resource resourceA = storeFactory.getResourceStore().create(resourceServer, KeycloakModelUtils.generateId(), resourceServer.getClientId());
+        Resource resourceB = storeFactory.getResourceStore().create(resourceServer, KeycloakModelUtils.generateId(), resourceServer.getClientId());
+
+        UserPolicyRepresentation userPolicy = new UserPolicyRepresentation();
+        userPolicy.setName(KeycloakModelUtils.generateId());
+        UserModel marta = session.users().getUserByUsername(session.getContext().getRealm(), "marta");
+        userPolicy.addUser(marta.getId());
+        Policy policy = storeFactory.getPolicyStore().create(resourceServer, userPolicy);
+
+        ResourcePermissionRepresentation permRepA = new ResourcePermissionRepresentation();
+        permRepA.setName(KeycloakModelUtils.generateId());
+        permRepA.addResource(resourceA.getId());
+        permRepA.addPolicy(policy.getName());
+        storeFactory.getPolicyStore().create(resourceServer, permRepA);
+
+        ResourcePermissionRepresentation permRepB = new ResourcePermissionRepresentation();
+        permRepB.setName(KeycloakModelUtils.generateId());
+        permRepB.addResource(resourceB.getId());
+        permRepB.addPolicy(policy.getName());
+        storeFactory.getPolicyStore().create(resourceServer, permRepB);
+
+        session.getTransactionManager().commit();
+
+        AuthorizationRequest authzRequest = new AuthorizationRequest();
+        AuthorizationRequest.Metadata metadata = new AuthorizationRequest.Metadata();
+        metadata.setEvaluationSemantic(EvaluationSemantic.PERMIT_ON_FIRST_PERMIT);
+        authzRequest.setMetadata(metadata);
+
+        DefaultEvaluationContext context = createEvaluationContext(session, Collections.emptyMap());
+        PermissionEvaluator evaluator = authorization.evaluators().from(
+                Arrays.asList(
+                        new ResourcePermission(resourceA, Collections.emptyList(), resourceServer),
+                        new ResourcePermission(resourceB, Collections.emptyList(), resourceServer)),
+                context);
+
+        Collection<Permission> permissions = evaluator.evaluate(resourceServer, authzRequest);
+
+        assertFalse(permissions.isEmpty());
+        Assertions.assertTrue(permissions.size() <= 2);
+    }
+
+    @Test
+    public void testEvaluationSemanticDenyOnFirstDeny() {
+        testingClient.server().run(PolicyEvaluationTest::testEvaluationSemanticDenyOnFirstDeny);
+    }
+
+    public static void testEvaluationSemanticDenyOnFirstDeny(KeycloakSession session) {
+        session.getContext().setRealm(session.realms().getRealmByName("authz-test"));
+        AuthorizationProvider authorization = session.getProvider(AuthorizationProvider.class);
+        ClientModel clientModel = session.clients().getClientByClientId(session.getContext().getRealm(), "resource-server-test");
+        StoreFactory storeFactory = authorization.getStoreFactory();
+        ResourceServer resourceServer = storeFactory.getResourceServerStore().findByClient(clientModel);
+
+        Scope writeScope = storeFactory.getScopeStore().create(resourceServer, "denyFirstWrite-" + KeycloakModelUtils.generateId());
+
+        Resource resourceA = storeFactory.getResourceStore().create(resourceServer, KeycloakModelUtils.generateId(), resourceServer.getClientId());
+        Resource resourceB = storeFactory.getResourceStore().create(resourceServer, KeycloakModelUtils.generateId(), resourceServer.getClientId());
+
+        UserPolicyRepresentation userPolicy = new UserPolicyRepresentation();
+        userPolicy.setName(KeycloakModelUtils.generateId());
+        UserModel marta = session.users().getUserByUsername(session.getContext().getRealm(), "marta");
+        userPolicy.addUser(marta.getId());
+        Policy policy = storeFactory.getPolicyStore().create(resourceServer, userPolicy);
+
+        ResourcePermissionRepresentation permRepB = new ResourcePermissionRepresentation();
+        permRepB.setName(KeycloakModelUtils.generateId());
+        permRepB.addResource(resourceB.getId());
+        permRepB.addPolicy(policy.getName());
+        storeFactory.getPolicyStore().create(resourceServer, permRepB);
+
+        session.getTransactionManager().commit();
+
+        AuthorizationRequest authzRequest = new AuthorizationRequest();
+        AuthorizationRequest.Metadata metadata = new AuthorizationRequest.Metadata();
+        metadata.setEvaluationSemantic(EvaluationSemantic.DENY_ON_FIRST_DENY);
+        authzRequest.setMetadata(metadata);
+
+        DefaultEvaluationContext context = createEvaluationContext(session, Collections.emptyMap());
+        PermissionEvaluator evaluator = authorization.evaluators().from(
+                Arrays.asList(
+                        new ResourcePermission(resourceA, List.of(writeScope), resourceServer),
+                        new ResourcePermission(resourceB, Collections.emptyList(), resourceServer)),
+                context);
+
+        Collection<Permission> permissions = evaluator.evaluate(resourceServer, authzRequest);
+
+        Assertions.assertTrue(permissions.isEmpty());
+    }
+
+    @Test
+    public void testEvaluationSemanticExecuteAll() {
+        testingClient.server().run(PolicyEvaluationTest::testEvaluationSemanticExecuteAll);
+    }
+
+    public static void testEvaluationSemanticExecuteAll(KeycloakSession session) {
+        session.getContext().setRealm(session.realms().getRealmByName("authz-test"));
+        AuthorizationProvider authorization = session.getProvider(AuthorizationProvider.class);
+        ClientModel clientModel = session.clients().getClientByClientId(session.getContext().getRealm(), "resource-server-test");
+        StoreFactory storeFactory = authorization.getStoreFactory();
+        ResourceServer resourceServer = storeFactory.getResourceServerStore().findByClient(clientModel);
+
+        Resource resourceA = storeFactory.getResourceStore().create(resourceServer, KeycloakModelUtils.generateId(), resourceServer.getClientId());
+        Resource resourceB = storeFactory.getResourceStore().create(resourceServer, KeycloakModelUtils.generateId(), resourceServer.getClientId());
+
+        UserPolicyRepresentation userPolicy = new UserPolicyRepresentation();
+        userPolicy.setName(KeycloakModelUtils.generateId());
+        UserModel marta = session.users().getUserByUsername(session.getContext().getRealm(), "marta");
+        userPolicy.addUser(marta.getId());
+        Policy policy = storeFactory.getPolicyStore().create(resourceServer, userPolicy);
+
+        ResourcePermissionRepresentation permRepA = new ResourcePermissionRepresentation();
+        permRepA.setName(KeycloakModelUtils.generateId());
+        permRepA.addResource(resourceA.getId());
+        permRepA.addPolicy(policy.getName());
+        storeFactory.getPolicyStore().create(resourceServer, permRepA);
+
+        ResourcePermissionRepresentation permRepB = new ResourcePermissionRepresentation();
+        permRepB.setName(KeycloakModelUtils.generateId());
+        permRepB.addResource(resourceB.getId());
+        permRepB.addPolicy(policy.getName());
+        storeFactory.getPolicyStore().create(resourceServer, permRepB);
+
+        session.getTransactionManager().commit();
+
+        AuthorizationRequest authzRequest = new AuthorizationRequest();
+        AuthorizationRequest.Metadata metadata = new AuthorizationRequest.Metadata();
+        metadata.setEvaluationSemantic(EvaluationSemantic.EXECUTE_ALL);
+        authzRequest.setMetadata(metadata);
+
+        DefaultEvaluationContext context = createEvaluationContext(session, Collections.emptyMap());
+        PermissionEvaluator evaluator = authorization.evaluators().from(
+                Arrays.asList(
+                        new ResourcePermission(resourceA, Collections.emptyList(), resourceServer),
+                        new ResourcePermission(resourceB, Collections.emptyList(), resourceServer)),
+                context);
+
+        Collection<Permission> permissions = evaluator.evaluate(resourceServer, authzRequest);
+
+        assertEquals(2, permissions.size());
     }
 }

@@ -189,6 +189,7 @@ public class AuthorizationRequest {
         private String responseMode;
         private String permissionResourceFormat;
         private Boolean permissionResourceMatchingUri;
+        private EvaluationSemantic evaluationSemantic;
 
         public Boolean getIncludeResourceName() {
             if (includeResourceName == null) {
@@ -231,6 +232,14 @@ public class AuthorizationRequest {
 
         public void setPermissionResourceMatchingUri(Boolean permissionResourceMatchingUri) {
             this.permissionResourceMatchingUri = permissionResourceMatchingUri;
+        }
+
+        public EvaluationSemantic getEvaluationSemantic() {
+            return evaluationSemantic;
+        }
+
+        public void setEvaluationSemantic(EvaluationSemantic evaluationSemantic) {
+            this.evaluationSemantic = evaluationSemantic;
         }
     }
 }

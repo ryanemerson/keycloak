@@ -70,6 +70,9 @@ class IterablePermissionEvaluator implements PermissionEvaluator {
 
             while (permissions.hasNext()) {
                 this.policyEvaluator.evaluate(permissions.next(), authorizationProvider, executionContext, decision, decisionCache);
+                if (decision.isResolved()) {
+                    break;
+                }
             }
 
             decision.onComplete();
